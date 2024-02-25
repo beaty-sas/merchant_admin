@@ -49,35 +49,11 @@ export default function CalendarFiltersResult({
       <Box sx={{ typography: 'body2' }}>
         <strong>{results}</strong>
         <Box component="span" sx={{ color: 'text.secondary', ml: 0.25 }}>
-          results found
+          результатів найдено
         </Box>
       </Box>
 
       <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
-        {!!filters.colors.length && (
-          <Block label="Colors:">
-            {filters.colors.map((item) => (
-              <Chip
-                key={item}
-                size="small"
-                label={
-                  <Box
-                    sx={{
-                      ml: -0.5,
-                      width: 18,
-                      height: 18,
-                      bgcolor: item,
-                      borderRadius: '50%',
-                      border: (theme) => `solid 1px ${alpha(theme.palette.common.white, 0.24)}`,
-                    }}
-                  />
-                }
-                onDelete={() => handleRemoveColor(item)}
-              />
-            ))}
-          </Block>
-        )}
-
         {filters.startDate && filters.endDate && (
           <Block label="Date:">
             <Chip size="small" label={shortLabel} onDelete={handleRemoveDate} />
@@ -90,7 +66,7 @@ export default function CalendarFiltersResult({
             onClick={onResetFilters}
             startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
           >
-            Clear
+            Очистити фільтри
           </Button>
         )}
       </Stack>

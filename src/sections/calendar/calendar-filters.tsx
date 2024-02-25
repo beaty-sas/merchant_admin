@@ -86,7 +86,7 @@ export default function CalendarFilters({
       sx={{ py: 2, pr: 1, pl: 2.5 }}
     >
       <Typography variant="h6" sx={{ flexGrow: 1 }}>
-        Filters
+        Фільтри
       </Typography>
 
       <Tooltip title="Reset">
@@ -103,26 +103,15 @@ export default function CalendarFilters({
     </Stack>
   );
 
-  const renderColors = (
-    <Stack spacing={1} sx={{ my: 3, px: 2.5 }}>
-      <Typography variant="subtitle2">Colors</Typography>
-      <ColorPicker
-        colors={colorOptions}
-        selected={filters.colors}
-        onSelectColor={handleFilterColors}
-      />
-    </Stack>
-  );
-
   const renderDateRange = (
     <Stack spacing={1.5} sx={{ mb: 3, px: 2.5 }}>
-      <Typography variant="subtitle2">Range</Typography>
+      <Typography variant="subtitle2">Період</Typography>
 
       <Stack spacing={2}>
-        <DatePicker label="Start date" value={filters.startDate} onChange={handleFilterStartDate} />
+        <DatePicker label="Дата початку" value={filters.startDate} onChange={handleFilterStartDate} />
 
         <DatePicker
-          label="End date"
+          label="Дата кінця"
           value={filters.endDate}
           onChange={handleFilterEndDate}
           slotProps={{
@@ -139,7 +128,7 @@ export default function CalendarFilters({
   const renderEvents = (
     <>
       <Typography variant="subtitle2" sx={{ px: 2.5, mb: 1 }}>
-        Events ({events.length})
+        Броюнвання ({events.length})
       </Typography>
 
       <Scrollbar sx={{ height: 1 }}>
@@ -181,9 +170,9 @@ export default function CalendarFilters({
                     fDateTime(event.start, 'dd MMM yy')
                   ) : (
                     <>
-                      {`${fDateTime(event.start, 'dd MMM yy p')} - ${fDateTime(
+                      {`${fDateTime(event.start, 'dd MMM yy HH:mm')} - ${fDateTime(
                         event.end,
-                        'dd MMM yy p'
+                        'dd MMM yy HH:mm'
                       )}`}
                     </>
                   )}
@@ -212,8 +201,6 @@ export default function CalendarFilters({
       {renderHead}
 
       <Divider sx={{ borderStyle: 'dashed' }} />
-
-      {renderColors}
 
       {renderDateRange}
 

@@ -11,13 +11,13 @@ export function fDate(date: InputValue, newFormat?: string) {
 }
 
 export function fTime(date: InputValue, newFormat?: string) {
-  const fm = newFormat || 'p';
+  const fm = newFormat || 'HH:mm';
 
   return date ? format(new Date(date), fm) : '';
 }
 
 export function fDateTime(date: InputValue, newFormat?: string) {
-  const fm = newFormat || 'dd MMM yyyy p';
+  const fm = newFormat || 'dd MMM yyyy HH:mm';
 
   return date ? format(new Date(date), fm) : '';
 }

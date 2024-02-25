@@ -19,14 +19,14 @@ import { ICalendarView } from 'src/types/calendar';
 const VIEW_OPTIONS = [
   {
     value: 'dayGridMonth',
-    label: 'Month',
+    label: 'Місяць',
     icon: 'mingcute:calendar-month-line',
   },
-  { value: 'timeGridWeek', label: 'Week', icon: 'mingcute:calendar-week-line' },
-  { value: 'timeGridDay', label: 'Day', icon: 'mingcute:calendar-day-line' },
+  { value: 'timeGridWeek', label: 'Тиждень', icon: 'mingcute:calendar-week-line' },
+  { value: 'timeGridDay', label: 'День', icon: 'mingcute:calendar-day-line' },
   {
     value: 'listWeek',
-    label: 'Agenda',
+    label: 'Агенда',
     icon: 'fluent:calendar-agenda-24-regular',
   },
 ] as const;

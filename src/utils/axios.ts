@@ -50,4 +50,15 @@ export const endpoints = {
     details: '/api/product/details',
     search: '/api/product/search',
   },
+  // -----------------------------
+  booking: {
+    list: '/booking/business/',
+    info: '/booking/',
+    cancel: '/booking/',
+  },
+  business: {
+    list: '/businesses/',
+    my: '/businesses/my',
+  },
+  attachements: '/attachments/',
 };

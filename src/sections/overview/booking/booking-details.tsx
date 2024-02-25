@@ -1,6 +1,4 @@
-import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
-import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
@@ -21,30 +19,20 @@ import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { TableHeadCustom } from 'src/components/table';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import { IBooking } from 'src/types/booking';
+import { Typography } from '@mui/material';
+import { cancelBooking } from 'src/api/booking';
+import { enqueueSnackbar } from 'notistack';
 
 // ----------------------------------------------------------------------
 
-type RowProps = {
-  id: string;
-  checkIn: Date;
-  checkOut: Date;
-  status: string;
-  destination: {
-    name: string;
-    coverUrl: string;
-  };
-  customer: {
-    avatarUrl: string;
-    name: string;
-    phoneNumber: string;
-  };
-};
 
 interface Props extends CardProps {
   title?: string;
   subheader?: string;
   tableLabels: any;
-  tableData: RowProps[];
+  tableData: IBooking[];
+  businessId: number;
 }
 
 export default function BookingDetails({
@@ -52,6 +40,7 @@ export default function BookingDetails({
   subheader,
   tableLabels,
   tableData,
+  businessId,
   ...other
 }: Props) {
   return (
@@ -64,8 +53,8 @@ export default function BookingDetails({
             <TableHeadCustom headLabel={tableLabels} />
 
             <TableBody>
-              {tableData.map((row) => (
-                <BookingDetailsRow key={row.id} row={row} />
+              {tableData.map((row: IBooking) => (
+                <BookingDetailsRow key={row.id} row={row} businessId={businessId}/>
               ))}
             </TableBody>
           </Table>
@@ -73,16 +62,6 @@ export default function BookingDetails({
       </TableContainer>
 
       <Divider sx={{ borderStyle: 'dashed' }} />
-
-      {/* <Box sx={{ p: 2, textAlign: 'right' }}>
-        <Button
-          size="small"
-          color="inherit"
-          endIcon={<Iconify icon="eva:arrow-ios-forward-fill" width={18} sx={{ ml: -0.5 }} />}
-        >
-          View All
-        </Button>
-      </Box> */}
     </Card>
   );
 }
@@ -90,34 +69,21 @@ export default function BookingDetails({
 // ----------------------------------------------------------------------
 
 type BookingDetailsRowProps = {
-  row: RowProps;
+  row: IBooking;
+  businessId: number;
 };
 
-function BookingDetailsRow({ row }: BookingDetailsRowProps) {
+function BookingDetailsRow({ row, businessId }: BookingDetailsRowProps) {
   const theme = useTheme();
 
   const lightMode = theme.palette.mode === 'light';
 
   const popover = usePopover();
 
-  const handleDownload = () => {
+  const handleDelete = async () => {
     popover.onClose();
-    console.info('DOWNLOAD', row.id);
-  };
-
-  const handlePrint = () => {
-    popover.onClose();
-    console.info('PRINT', row.id);
-  };
-
-  const handleShare = () => {
-    popover.onClose();
-    console.info('SHARE', row.id);
-  };
-
-  const handleDelete = () => {
-    popover.onClose();
-    console.info('DELETE', row.id);
+    await cancelBooking(row.id, businessId);
+    enqueueSnackbar('Бронювання відмінено!', { variant: 'error' });
   };
 
   return (
@@ -126,17 +92,31 @@ function BookingDetailsRow({ row }: BookingDetailsRowProps) {
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
           <Avatar
             variant="rounded"
-            alt={row.destination.name}
-            src={row.destination.coverUrl}
+            alt={row.user.display_name}
+            src={row.user.display_name}
             sx={{ mr: 2, width: 48, height: 48 }}
           />
-          {row.destination.name}
+          <ListItemText
+            primary={row.user.display_name}
+            secondary={row.user.phone_number}
+            primaryTypographyProps={{ typography: 'body2', noWrap: true }}
+            secondaryTypographyProps={{
+              mt: 0.5,
+              component: 'span',
+            }}
+          />
+        </TableCell>
+
+        <TableCell>
+          <Typography variant="caption" noWrap>
+            {row.offers.map((offer) => offer.name).join(', ')}
+          </Typography>
         </TableCell>
 
         <TableCell>
           <ListItemText
-            primary={row.customer.name}
-            secondary={row.customer.phoneNumber}
+            primary={fTime(new Date(row.start_time))}
+            secondary={fDate(new Date(row.start_time))}
             primaryTypographyProps={{ typography: 'body2', noWrap: true }}
             secondaryTypographyProps={{
               mt: 0.5,
@@ -148,8 +128,8 @@ function BookingDetailsRow({ row }: BookingDetailsRowProps) {
 
         <TableCell>
           <ListItemText
-            primary={fDate(new Date(row.checkIn))}
-            secondary={fTime(new Date(row.checkIn))}
+            primary={fTime(new Date(row.end_time))}
+            secondary={fDate(new Date(row.end_time))}
             primaryTypographyProps={{ typography: 'body2', noWrap: true }}
             secondaryTypographyProps={{
               mt: 0.5,
@@ -159,24 +139,17 @@ function BookingDetailsRow({ row }: BookingDetailsRowProps) {
           />
         </TableCell>
 
-        <TableCell>
-          <ListItemText
-            primary={fDate(new Date(row.checkOut))}
-            secondary={fTime(new Date(row.checkOut))}
-            primaryTypographyProps={{ typography: 'body2', noWrap: true }}
-            secondaryTypographyProps={{
-              mt: 0.5,
-              component: 'span',
-              typography: 'caption',
-            }}
-          />
+        <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
+          <Typography variant="subtitle2" noWrap>
+            {row.price} ₴
+          </Typography>
         </TableCell>
 
         <TableCell>
           <Label
             variant={lightMode ? 'soft' : 'filled'}
             color={
-              (row.status === 'Заброньовано' && 'success') ||
+              (row.status === 'ACTIVE' && 'success') ||
               'error'
             }
           >

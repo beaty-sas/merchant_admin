@@ -71,12 +71,7 @@ export function useNavData() {
             icon: ICONS.user,
           },
           {
-            title: 'Пропозиції',
-            path: paths.dashboard.user.list,
-            icon: ICONS.order,
-          },
-          {
-            title: 'Робочі години',
+            title: 'Графік роботи',
             path: paths.dashboard.user.list,
             icon: ICONS.kanban,
           },

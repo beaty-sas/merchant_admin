@@ -12,6 +12,7 @@ import {
 import { AUTH0_API } from 'src/config-global';
 
 import { AuthContext } from './auth-context';
+import axiosInstance from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -20,7 +21,7 @@ type Props = {
 };
 
 function AuthProviderWrapper({ children }: Props) {
-  const { isAuthenticated, user, isLoading, loginWithRedirect, loginWithPopup, logout } =
+  const { isAuthenticated, user, isLoading, loginWithRedirect, loginWithPopup, logout, getAccessTokenSilently } =
     useAuth0();
 
   const [popupClick, setPopupClick] = useState(true);
@@ -41,6 +42,12 @@ function AuthProviderWrapper({ children }: Props) {
     },
     [logout]
   );
+
+  if (isAuthenticated) {
+    getAccessTokenSilently().then((accessToken: string) => {
+      axiosInstance.defaults.headers.Authorization = `Bearer ${accessToken}`
+    })
+  }
 
   // ----------------------------------------------------------------------
 
@@ -64,8 +71,9 @@ function AuthProviderWrapper({ children }: Props) {
       loginWithRedirect,
       loginWithPopup: handleLoginWithPopup,
       logout: handleLogout,
+      getAccessTokenSilently,
     }),
-    [handleLoginWithPopup, handleLogout, loginWithRedirect, status, user]
+    [handleLoginWithPopup, handleLogout, loginWithRedirect, getAccessTokenSilently, status, user]
   );
 
   return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;
@@ -94,6 +102,8 @@ export const AuthProvider = ({ children }: Props) => {
       clientId={clientId}
       authorizationParams={{
         redirect_uri: redirectUri,
+        audience: AUTH0_API.audience,
+        scope: AUTH0_API.scope,
       }}
       onRedirectCallback={onRedirectCallback}
       cacheLocation="localstorage"

@@ -10,7 +10,6 @@ import interactionPlugin from '@fullcalendar/interaction';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import { useTheme } from '@mui/material/styles';
 import Container from '@mui/material/Container';
@@ -23,9 +22,7 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import { isAfter, isBetween } from 'src/utils/format-time';
 
 import { CALENDAR_COLOR_OPTIONS } from 'src/_mock/_calendar';
-import { updateEvent, useGetEvents } from 'src/api/calendar';
 
-import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
 
 import { ICalendarEvent, ICalendarFilters, ICalendarFilterValue } from 'src/types/calendar';
@@ -36,6 +33,10 @@ import { useEvent, useCalendar } from '../hooks';
 import CalendarToolbar from '../calendar-toolbar';
 import CalendarFilters from '../calendar-filters';
 import CalendarFiltersResult from '../calendar-filters-result';
+import { useGetMyBusiness } from 'src/api/business';
+import { useGetBookings } from 'src/api/booking';
+import { IBooking } from 'src/types/booking';
+import { secondary } from 'src/theme/palette';
 
 // ----------------------------------------------------------------------
 
@@ -57,8 +58,8 @@ export default function CalendarView() {
   const openFilters = useBoolean();
 
   const [filters, setFilters] = useState(defaultFilters);
-
-  const { events, eventsLoading } = useGetEvents();
+  const { business, businessLoading } = useGetMyBusiness()
+  const { bookings, bookingsLoading } = useGetBookings(business?.id || 0)
 
   const dateError = isAfter(filters.startDate, filters.endDate);
 
@@ -71,15 +72,11 @@ export default function CalendarView() {
     onDatePrev,
     onDateNext,
     onDateToday,
-    onDropEvent,
     onChangeView,
-    onSelectRange,
     onClickEvent,
-    onResizeEvent,
     onInitialView,
     //
     openForm,
-    onOpenForm,
     onCloseForm,
     //
     selectEventId,
@@ -87,8 +84,6 @@ export default function CalendarView() {
     //
     onClickEventInFilters,
   } = useCalendar();
-
-  const currentEvent = useEvent(events, selectEventId, selectedRange, openForm);
 
   useEffect(() => {
     onInitialView();
@@ -102,16 +97,19 @@ export default function CalendarView() {
   }, []);
 
   const handleResetFilters = useCallback(() => {
+    dataFiltered
     setFilters(defaultFilters);
   }, []);
 
   const canReset = !!filters.colors.length || (!!filters.startDate && !!filters.endDate);
 
   const dataFiltered = applyFilter({
-    inputData: events,
+    inputData: bookings,
     filters,
     dateError,
   });
+
+  const currentEvent = useEvent(dataFiltered, selectEventId, selectedRange, openForm);
 
   const renderResults = (
     <CalendarFiltersResult
@@ -137,14 +135,7 @@ export default function CalendarView() {
             mb: { xs: 3, md: 5 },
           }}
         >
-          <Typography variant="h4">Calendar</Typography>
-          <Button
-            variant="contained"
-            startIcon={<Iconify icon="mingcute:add-line" />}
-            onClick={onOpenForm}
-          >
-            New Event
-          </Button>
+          <Typography variant="h4">Календар</Typography>
         </Stack>
 
         {canReset && renderResults}
@@ -154,7 +145,7 @@ export default function CalendarView() {
             <CalendarToolbar
               date={date}
               view={view}
-              loading={eventsLoading}
+              loading={bookingsLoading || businessLoading}
               onNextDate={onDateNext}
               onPrevDate={onDatePrev}
               onToday={onDateToday}
@@ -163,10 +154,13 @@ export default function CalendarView() {
             />
 
             <Calendar
+              titleFormat={{ hour12: false }}
+              eventTimeFormat={{
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false,
+              }}
               weekends
-              editable
-              droppable
-              selectable
               rerenderDelay={10}
               allDayMaintainDuration
               eventResizableFromStart
@@ -177,15 +171,8 @@ export default function CalendarView() {
               eventDisplay="block"
               events={dataFiltered}
               headerToolbar={false}
-              select={onSelectRange}
               eventClick={onClickEvent}
               height={smUp ? 720 : 'auto'}
-              eventDrop={(arg) => {
-                onDropEvent(arg, updateEvent);
-              }}
-              eventResize={(arg) => {
-                onResizeEvent(arg, updateEvent);
-              }}
               plugins={[
                 listPlugin,
                 dayGridPlugin,
@@ -209,12 +196,12 @@ export default function CalendarView() {
         }}
       >
         <DialogTitle sx={{ minHeight: 76 }}>
-          {openForm && <> {currentEvent?.id ? 'Edit Event' : 'Add Event'}</>}
+          {openForm && <> {currentEvent?.id ? 'Змінти бронювання' : 'Додати бронювання'}</>}
         </DialogTitle>
 
         <CalendarForm
           currentEvent={currentEvent}
-          colorOptions={CALENDAR_COLOR_OPTIONS}
+          businessId={business?.id}
           onClose={onCloseForm}
         />
       </Dialog>
@@ -231,7 +218,7 @@ export default function CalendarView() {
         //
         dateError={dateError}
         //
-        events={events}
+        events={dataFiltered}
         colorOptions={CALENDAR_COLOR_OPTIONS}
         onClickEvent={onClickEventInFilters}
       />
@@ -246,25 +233,32 @@ function applyFilter({
   filters,
   dateError,
 }: {
-  inputData: ICalendarEvent[];
+  inputData: IBooking[];
   filters: ICalendarFilters;
   dateError: boolean;
-}) {
-  const { colors, startDate, endDate } = filters;
+}): ICalendarEvent[] {
+  const { startDate, endDate } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
-  inputData = stabilizedThis.map((el) => el[0]);
-
-  if (colors.length) {
-    inputData = inputData.filter((event) => colors.includes(event.color as string));
-  }
+  inputData = stabilizedThis.map((el) => el[0]).filter((booking) => booking.status !== 'CANCELLED');
 
   if (!dateError) {
     if (startDate && endDate) {
-      inputData = inputData.filter((event) => isBetween(event.start, startDate, endDate));
+      inputData = inputData.filter((booking) => isBetween(booking.start_time, startDate, endDate));
     }
   }
 
-  return inputData;
+  const normalizedTypes = inputData.map((booking: IBooking) => {
+    return {
+      id: booking.id.toString(),
+      title: `${booking.user.display_name} (${booking.user.phone_number})`,
+      start: booking.start_time.toString(),
+      end: booking.end_time.toString(),
+      color: secondary.main,
+      allDay: false,
+      description: booking.offers.map((offer) => offer.name).join(', '),
+    };
+  })
+  return normalizedTypes;
 }

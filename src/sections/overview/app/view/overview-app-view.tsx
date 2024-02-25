@@ -14,15 +14,19 @@ import { useSettingsContext } from 'src/components/settings';
 import AppWelcome from '../app-welcome';
 import AppWidgetSummary from '../app-widget-summary';
 import BookingDetails from '../../booking/booking-details';
+import { useGetBookings } from 'src/api/booking';
+import { useGetMyBusiness } from 'src/api/business';
 
 // ----------------------------------------------------------------------
 
 export default function OverviewAppView() {
   const { user } = useAuth0()
+  const { business } = useGetMyBusiness()
+  const { bookings } = useGetBookings(business?.id || 0)
 
   const theme = useTheme();
-
   const settings = useSettingsContext();
+
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
@@ -72,13 +76,15 @@ export default function OverviewAppView() {
 
         <Grid xs={12}>
           <BookingDetails
+            businessId={business?.id || 0}
             title="Наступні бронювання"
-            tableData={_bookings}
+            tableData={bookings}
             tableLabels={[
-              { id: 'destination', label: 'Послуги' },
               { id: 'customer', label: 'Клієнт' },
+              { id: 'destination', label: 'Послуги' },
               { id: 'checkIn', label: 'Час початку' },
               { id: 'checkOut', label: 'Час кінця' },
+              { id: 'price', label: 'ЦІна' },
               { id: 'status', label: 'Статус' },
               { id: '' },
             ]}

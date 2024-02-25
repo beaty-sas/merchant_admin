@@ -15,32 +15,29 @@ import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker';
 import uuidv4 from 'src/utils/uuidv4';
 import { isAfter, fTimestamp } from 'src/utils/format-time';
 
-import { createEvent, updateEvent, deleteEvent } from 'src/api/calendar';
+import { createEvent } from 'src/api/calendar';
 
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
-import { ColorPicker } from 'src/components/color-utils';
-import FormProvider, { RHFSwitch, RHFTextField } from 'src/components/hook-form';
+import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
 import { ICalendarDate, ICalendarEvent } from 'src/types/calendar';
+import { cancelBooking, updateBooking } from 'src/api/booking';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  colorOptions: string[];
   onClose: VoidFunction;
   currentEvent?: ICalendarEvent;
+  businessId: number;
 };
 
-export default function CalendarForm({ currentEvent, colorOptions, onClose }: Props) {
+export default function CalendarForm({ currentEvent, businessId, onClose }: Props) {
   const { enqueueSnackbar } = useSnackbar();
 
   const EventSchema = Yup.object().shape({
-    title: Yup.string().max(255).required('Title is required'),
-    description: Yup.string().max(5000, 'Description must be at most 5000 characters'),
-    // not required
-    color: Yup.string(),
-    allDay: Yup.boolean(),
+    title: Yup.string().max(255).required('Заголовок обовязковий'),
+    description: Yup.string().max(5000, 'Перелік послуг має бути менше 5000 символів'),
     start: Yup.mixed(),
     end: Yup.mixed(),
   });
@@ -65,9 +62,7 @@ export default function CalendarForm({ currentEvent, colorOptions, onClose }: Pr
   const onSubmit = handleSubmit(async (data) => {
     const eventData: ICalendarEvent = {
       id: currentEvent?.id ? currentEvent?.id : uuidv4(),
-      color: data?.color,
       title: data?.title,
-      allDay: data?.allDay,
       description: data?.description,
       end: data?.end,
       start: data?.start,
@@ -76,38 +71,42 @@ export default function CalendarForm({ currentEvent, colorOptions, onClose }: Pr
     try {
       if (!dateError) {
         if (currentEvent?.id) {
-          await updateEvent(eventData);
-          enqueueSnackbar('Update success!');
+          await updateBooking(Number(currentEvent?.id), {start_time: data.start, end_time: data.end}, businessId);
+          enqueueSnackbar('Успішно змінено!');
         } else {
           await createEvent(eventData);
-          enqueueSnackbar('Create success!');
+          enqueueSnackbar('Успішно стврено!');
         }
         onClose();
         reset();
       }
     } catch (error) {
-      console.error(error);
+      enqueueSnackbar(error, { variant: 'error' });
     }
   });
 
   const onDelete = useCallback(async () => {
     try {
-      await deleteEvent(`${currentEvent?.id}`);
-      enqueueSnackbar('Delete success!');
+      await cancelBooking(Number(currentEvent?.id) || 0, businessId);
+      enqueueSnackbar('Успішно скасовано!');
       onClose();
     } catch (error) {
-      console.error(error);
+      enqueueSnackbar(error, { variant: 'error' });
     }
   }, [currentEvent?.id, enqueueSnackbar, onClose]);
 
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Stack spacing={3} sx={{ px: 3 }}>
-        <RHFTextField name="title" label="Title" />
+        <RHFTextField name="title" label="Заголовок" disabled/>
 
-        <RHFTextField name="description" label="Description" multiline rows={3} />
-
-        <RHFSwitch name="allDay" label="All day" />
+        <RHFTextField
+          name="description"
+          label="Перелік послуг"
+          multiline
+          rows={3}
+          disabled
+        />
 
         <Controller
           name="start"
@@ -121,8 +120,8 @@ export default function CalendarForm({ currentEvent, colorOptions, onClose }: Pr
                   field.onChange(fTimestamp(newValue));
                 }
               }}
-              label="Start date"
-              format="dd/MM/yyyy hh:mm a"
+              label="Дата та час початку"
+              format="dd/MM/yyyy HH:mm"
               slotProps={{
                 textField: {
                   fullWidth: true,
@@ -144,35 +143,24 @@ export default function CalendarForm({ currentEvent, colorOptions, onClose }: Pr
                   field.onChange(fTimestamp(newValue));
                 }
               }}
-              label="End date"
-              format="dd/MM/yyyy hh:mm a"
+              label="Дата та час кінця"
+              format="dd/MM/yyyy HH:mm"
               slotProps={{
                 textField: {
                   fullWidth: true,
                   error: dateError,
-                  helperText: dateError && 'End date must be later than start date',
+                  helperText: dateError && 'Дата та час кінця повинні бути пізніше, ніж початок',
                 },
               }}
             />
           )}
         />
 
-        <Controller
-          name="color"
-          control={control}
-          render={({ field }) => (
-            <ColorPicker
-              selected={field.value as string}
-              onSelectColor={(color) => field.onChange(color as string)}
-              colors={colorOptions}
-            />
-          )}
-        />
       </Stack>
 
       <DialogActions>
         {!!currentEvent?.id && (
-          <Tooltip title="Delete Event">
+          <Tooltip title="Скачувати бронювання">
             <IconButton onClick={onDelete}>
               <Iconify icon="solar:trash-bin-trash-bold" />
             </IconButton>
@@ -182,7 +170,7 @@ export default function CalendarForm({ currentEvent, colorOptions, onClose }: Pr
         <Box sx={{ flexGrow: 1 }} />
 
         <Button variant="outlined" color="inherit" onClick={onClose}>
-          Cancel
+          Закрити
         </Button>
 
         <LoadingButton
@@ -191,7 +179,7 @@ export default function CalendarForm({ currentEvent, colorOptions, onClose }: Pr
           loading={isSubmitting}
           disabled={dateError}
         >
-          Save Changes
+          Зберегти зміни
         </LoadingButton>
       </DialogActions>
     </FormProvider>

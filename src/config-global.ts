@@ -26,6 +26,8 @@ export const AUTH0_API = {
   clientId: process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID,
   domain: process.env.NEXT_PUBLIC_AUTH0_DOMAIN,
   callbackUrl: process.env.NEXT_PUBLIC_AUTH0_CALLBACK_URL,
+  scope: process.env.NEXT_PUBLIC_AUTH0_SCOPE,
+  audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE,
 };
 
 export const SUPABASE_API = {
