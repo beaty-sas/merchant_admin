@@ -37,7 +37,7 @@ export function useGetMyBusiness(): {
 export async function updateMyBusiness(businessId: number, data: IBusinessUpdate) {
   const URL = endpoints.business.list + businessId;
 
-  await axiosInstance.patch(URL, { display_name: data.display_name, phone_number: data.phone_number });
+  await axiosInstance.patch(URL, data);
 
   mutate(
     URL,

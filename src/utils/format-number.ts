@@ -18,7 +18,7 @@ function getLocaleCode() {
 
   return {
     code: code ?? 'en-US',
-    currency: currency ?? 'USD',
+    currency: currency ?? 'UAH',
   };
 }
 

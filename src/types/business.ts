@@ -20,6 +20,6 @@ export type IBusiness = {
 export type IBusinessUpdate = {
   display_name: string;
   phone_number: string;
-  location?: ILocation | null;
+  location?: {name: string};
   logo_id?: number | null;
 };

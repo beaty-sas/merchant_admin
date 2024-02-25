@@ -1,9 +1,4 @@
-export type IOffer = {
-  id: number
-  name: string
-  price: number
-  duration: number
-}
+import { IOffer } from "./offer";
 
 export type IUser = {
   display_name: string

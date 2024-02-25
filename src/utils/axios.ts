@@ -60,5 +60,8 @@ export const endpoints = {
     list: '/businesses/',
     my: '/businesses/my',
   },
+  offer: {
+    list: '/offers', 
+  },
   attachements: '/attachments/',
 };

@@ -4,7 +4,6 @@ import { useCallback } from 'react';
 
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 
 import { useSearchParams } from 'src/routes/hooks';
@@ -15,31 +14,11 @@ import { PATH_AFTER_LOGIN } from 'src/config-global';
 // ----------------------------------------------------------------------
 
 export default function Auth0LoginView() {
-  const { loginWithRedirect, loginWithPopup } = useAuthContext();
+  const { loginWithRedirect } = useAuthContext();
 
   const searchParams = useSearchParams();
 
   const returnTo = searchParams.get('returnTo');
-
-  const handleLoginWithPopup = useCallback(async () => {
-    try {
-      await loginWithPopup?.();
-    } catch (error) {
-      console.error(error);
-    }
-  }, [loginWithPopup]);
-
-  const handleRegisterWithPopup = useCallback(async () => {
-    try {
-      await loginWithPopup?.({
-        authorizationParams: {
-          screen_hint: 'signup',
-        },
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  }, [loginWithPopup]);
 
   const handleLoginWithRedirect = useCallback(async () => {
     try {
@@ -71,7 +50,7 @@ export default function Auth0LoginView() {
   return (
     <>
       <Typography variant="h4" sx={{ mb: 5 }}>
-        Sign in to Minimal
+        Вхід в кабінет
       </Typography>
 
       <Stack spacing={2}>
@@ -82,7 +61,7 @@ export default function Auth0LoginView() {
           variant="contained"
           onClick={handleLoginWithRedirect}
         >
-          Login with Redirect
+          Логін
         </Button>
 
         <Button
@@ -92,30 +71,9 @@ export default function Auth0LoginView() {
           variant="soft"
           onClick={handleRegisterWithRedirect}
         >
-          Register with Redirect
+          Реєстрація
         </Button>
 
-        <Divider />
-
-        <Button
-          fullWidth
-          color="inherit"
-          size="large"
-          variant="contained"
-          onClick={handleLoginWithPopup}
-        >
-          Login With Popup
-        </Button>
-
-        <Button
-          fullWidth
-          color="inherit"
-          size="large"
-          variant="soft"
-          onClick={handleRegisterWithPopup}
-        >
-          Register With Popup
-        </Button>
       </Stack>
     </>
   );

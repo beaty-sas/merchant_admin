@@ -9,6 +9,10 @@ import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+
 
 import { fData } from 'src/utils/format-number';
 
@@ -18,6 +22,10 @@ import FormProvider, {
   RHFUploadAvatar,
 } from 'src/components/hook-form';
 import { makeNewAttachment, updateMyBusiness, useGetMyBusiness } from 'src/api/business';
+import OfferList from '../overview/offers/offers-list';
+import { useGetMyOffers } from 'src/api/offer';
+import { useBoolean } from 'src/hooks/use-boolean';
+import OfferForm from '../offer/offer-form';
 
 // -----------------------AccountGeneral-----------------------------------------------
 
@@ -32,6 +40,8 @@ type BusinessType = {
 export default function AccountGeneral() {
   const { enqueueSnackbar } = useSnackbar();
   const { business } = useGetMyBusiness()
+  const { offers } = useGetMyOffers(business?.id || 0);
+  const dialog = useBoolean();
 
   const UpdateBusinessSchema = Yup.object().shape({
     displayName: Yup.string().required('Ім`я обовязкове'),
@@ -64,7 +74,7 @@ export default function AccountGeneral() {
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
       enqueueSnackbar('Зміни успішно збережено!');
-      await updateMyBusiness(business.id, { display_name: data.displayName, phone_number: data.phoneNumber, logo_id: data.logoId });
+      await updateMyBusiness(business.id, { display_name: data.displayName, phone_number: data.phoneNumber, logo_id: data.logoId, location: { name: data.address } });
     } catch (error) {
       enqueueSnackbar('Зміни не збережено! Спробуйте ще раз', { variant: 'error' });
     }
@@ -73,7 +83,7 @@ export default function AccountGeneral() {
   const handleDrop = useCallback(
     async (acceptedFiles: File[]) => {
       const file = acceptedFiles[0];
-      
+
       const logo = await makeNewAttachment(file);
 
       const newFile = Object.assign(file, {
@@ -133,24 +143,55 @@ export default function AccountGeneral() {
               rowGap={3}
               columnGap={2}
               display="grid"
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(2, 1fr)',
-              }}
             >
               <RHFTextField name="displayName" label="Назва" />
               <RHFTextField name="phoneNumber" label="Номер телефону" />
-              <RHFTextField name="address" label="Адреса" disabled/>
+              <RHFTextField name="address" label="Адреса" />
 
             </Box>
 
             <Stack spacing={3} alignItems="flex-end" sx={{ mt: 3 }}>
 
-              <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+              <LoadingButton type="submit" variant="contained" loading={isSubmitting} fullWidth>
                 Зберегти зміни
               </LoadingButton>
             </Stack>
           </Card>
+        </Grid>
+
+        <Grid xs={12}>
+          <OfferList
+            title='Послуги'
+            tableLabels={[
+              { id: 'name', label: 'Назва' },
+              { id: 'price', label: 'Ціна', align: 'right' },
+              { id: 'duration', label: 'Тривалість', align: 'right' },
+              { id: '' },
+            ]}
+            tableData={offers}
+          />
+          <Box sx={{ p: 2, textAlign: 'right' }}>
+            <Button
+              size="small"
+              color="inherit"
+              onClick={dialog.onTrue}
+            >
+              + Нова послуга
+            </Button>
+          </Box>
+
+          <Dialog
+            fullWidth
+            maxWidth="xs"
+            open={dialog.value}
+            onClose={dialog.onFalse}
+          >
+            <DialogTitle sx={{ minHeight: 76 }}>
+               Нова послуга
+            </DialogTitle>
+
+            <OfferForm onClose={dialog.onFalse} businessId={business?.id || 0}/>
+          </Dialog>
         </Grid>
       </Grid>
     </FormProvider>
