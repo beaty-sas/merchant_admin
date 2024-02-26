@@ -135,7 +135,7 @@ export function PostContent({
 }: PostContentProps) {
   const mdUp = useResponsive('up', 'md');
 
-  const linkTo = paths.post.details(title);
+  const linkTo = "#";
 
   const latestPostLarge = index === 0;
 

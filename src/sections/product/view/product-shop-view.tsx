@@ -107,7 +107,7 @@ export default function ProductShopView() {
         results={searchResults}
         onSearch={handleSearch}
         loading={searchLoading}
-        hrefItem={(id: string) => paths.product.details(id)}
+        hrefItem={(id: string) => '#'}
       />
 
       <Stack direction="row" spacing={1} flexShrink={0}>

@@ -73,7 +73,7 @@ export default function PostListHomeView() {
           results={searchResults}
           onSearch={handleSearch}
           loading={searchLoading}
-          hrefItem={(title: string) => paths.post.details(title)}
+          hrefItem={(title: string) => '#'}
         />
 
         <PostSort sort={sortBy} onSort={handleSortBy} sortOptions={POST_SORT_OPTIONS} />

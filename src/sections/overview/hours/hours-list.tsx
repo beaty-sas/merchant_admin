@@ -1,5 +1,4 @@
 import Table from '@mui/material/Table';
-import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
@@ -15,18 +14,18 @@ import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { TableHeadCustom } from 'src/components/table';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import { IOffer } from 'src/types/offer';
+import { IWorkingHour } from 'src/types/working-hours';
 
 // ----------------------------------------------------------------------
 
 interface Props extends CardProps {
   title?: string;
   subheader?: string;
-  tableData: IOffer[];
+  tableData: IWorkingHour[];
   tableLabels: any;
 }
 
-export default function OfferTableList({
+export default function HoursTableList({
   title,
   subheader,
   tableLabels,
@@ -50,8 +49,6 @@ export default function OfferTableList({
           </Table>
         </Scrollbar>
       </TableContainer>
-
-      <Divider sx={{ borderStyle: 'dashed' }} />
     </Card>
   );
 }
@@ -59,7 +56,7 @@ export default function OfferTableList({
 // ----------------------------------------------------------------------
 
 type OfferRowProps = {
-  row: IOffer;
+  row: IWorkingHour;
 };
 
 function OfferRow({ row }: OfferRowProps) {
@@ -74,15 +71,15 @@ function OfferRow({ row }: OfferRowProps) {
     <>
       <TableRow>
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          <ListItemText primary={row.name} />
+          <ListItemText primary={row.date} />
         </TableCell>
 
         <TableCell align="right">
-          {row.price} ₴
+          {row.opening_time}
         </TableCell>
 
         <TableCell align="right">
-          {row.duration / 60} хв
+          {row.closing_time}
         </TableCell>
 
         <TableCell align="right" sx={{ pr: 1 }}>

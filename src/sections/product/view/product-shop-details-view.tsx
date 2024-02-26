@@ -78,7 +78,7 @@ export default function ProductShopDetailsView({ id }: Props) {
       action={
         <Button
           component={RouterLink}
-          href={paths.product.root}
+          href={'#'}
           startIcon={<Iconify icon="eva:arrow-ios-back-fill" width={16} />}
           sx={{ mt: 3 }}
         >
@@ -96,7 +96,7 @@ export default function ProductShopDetailsView({ id }: Props) {
           { name: 'Home', href: '/' },
           {
             name: 'Shop',
-            href: paths.product.root,
+            href: '#',
           },
           { name: product?.name },
         ]}

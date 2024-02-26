@@ -26,7 +26,7 @@ export default function HomeLookingFor() {
       variant="outlined"
       target="_blank"
       rel="noopener"
-      href={paths.zoneUI}
+      href={'#'}
       endIcon={<Iconify icon="eva:arrow-ios-forward-fill" />}
     >
       Visit Zone Landing Page

@@ -103,7 +103,7 @@ export default function ProductDetailsView({ id }: Props) {
       <ProductDetailsToolbar
         backLink={paths.dashboard.product.root}
         editLink={paths.dashboard.product.edit(`${product?.id}`)}
-        liveLink={paths.product.details(`${product?.id}`)}
+        liveLink={'#'}
         publish={publish || ''}
         onChangePublish={handleChangePublish}
         publishOptions={PRODUCT_PUBLISH_OPTIONS}

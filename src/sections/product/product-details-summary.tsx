@@ -105,7 +105,7 @@ export default function ProductDetailsSummary({
         });
       }
       onGotoStep?.(0);
-      router.push(paths.product.checkout);
+      router.push('#');
     } catch (error) {
       console.error(error);
     }

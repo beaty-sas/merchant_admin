@@ -183,7 +183,7 @@ export function CheckoutProvider({ children }: Props) {
   const onReset = useCallback(() => {
     if (completed) {
       reset();
-      router.replace(paths.product.root);
+      router.replace('#');
     }
   }, [completed, reset, router]);
 

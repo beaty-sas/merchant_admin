@@ -7,13 +7,7 @@ import Container from '@mui/material/Container';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 
-import { paths } from 'src/routes/paths';
-
 import { _mock } from 'src/_mock';
-
-import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-
-import ComponentHero from 'src/sections/_examples/component-hero';
 
 import CarouselBasic1 from './carousel-basic-1';
 import CarouselBasic2 from './carousel-basic-2';
@@ -37,20 +31,6 @@ const _carouselsExample = [...Array(20)].map((_, index) => ({
 export default function CarouselView() {
   return (
     <>
-      <ComponentHero>
-        <CustomBreadcrumbs
-          heading="Carousel"
-          links={[
-            {
-              name: 'Components',
-              href: paths.components,
-            },
-            { name: 'Carousel' },
-          ]}
-          moreLink={['https://react-slick.neostack.com']}
-        />
-      </ComponentHero>
-
       <Container sx={{ my: 10 }}>
         <Box
           gap={3}

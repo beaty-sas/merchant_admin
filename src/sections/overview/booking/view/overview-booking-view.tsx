@@ -165,20 +165,6 @@ export default function OverviewBookingView() {
           <BookingNewest title="Newest Booking" subheader="12 Booking" list={_bookingNew} />
         </Grid>
 
-        <Grid xs={12}>
-          <BookingDetails
-            title="Booking Details"
-            tableData={_bookings}
-            tableLabels={[
-              { id: 'destination', label: 'Destination' },
-              { id: 'customer', label: 'Customer' },
-              { id: 'checkIn', label: 'Check In' },
-              { id: 'checkOut', label: 'Check Out' },
-              { id: 'status', label: 'Status' },
-              { id: '' },
-            ]}
-          />
-        </Grid>
       </Grid>
     </Container>
   );

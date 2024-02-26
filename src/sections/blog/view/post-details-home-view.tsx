@@ -50,7 +50,7 @@ export default function PostDetailsHomeView({ title }: Props) {
         action={
           <Button
             component={RouterLink}
-            href={paths.post.root}
+            href={'#'}
             startIcon={<Iconify icon="eva:arrow-ios-back-fill" width={16} />}
             sx={{ mt: 3 }}
           >
@@ -87,7 +87,7 @@ export default function PostDetailsHomeView({ title }: Props) {
             },
             {
               name: 'Blog',
-              href: paths.post.root,
+              href: '#',
             },
             {
               name: post?.title,

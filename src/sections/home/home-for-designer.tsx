@@ -54,7 +54,7 @@ export default function HomeForDesigner() {
           endIcon={<Iconify icon="eva:arrow-ios-forward-fill" />}
           target="_blank"
           rel="noopener"
-          href={paths.figma}
+          href={'#'}
         >
           Figma Workspace
         </Button>

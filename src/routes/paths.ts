@@ -17,39 +17,10 @@ const ROOTS = {
 // ----------------------------------------------------------------------
 
 export const paths = {
-  comingSoon: '/coming-soon',
-  maintenance: '/maintenance',
-  pricing: '/pricing',
-  payment: '/payment',
-  about: '/about-us',
-  contact: '/contact-us',
-  faqs: '/faqs',
   page403: '/error/403',
   page404: '/error/404',
   page500: '/error/500',
   components: '/components',
-  docs: 'https://docs.minimals.cc',
-  changelog: 'https://docs.minimals.cc/changelog',
-  zoneUI: 'https://mui.com/store/items/zone-landing-page/',
-  minimalUI: 'https://mui.com/store/items/minimal-dashboard/',
-  freeUI: 'https://mui.com/store/items/minimal-dashboard-free/',
-  figma:
-    'https://www.figma.com/file/hjxMnGUJCjY7pX8lQbS7kn/%5BPreview%5D-Minimal-Web.v5.4.0?type=design&node-id=0-1&mode=design&t=2fxnS70DuiTLGzND-0',
-  product: {
-    root: `/product`,
-    checkout: `/product/checkout`,
-    details: (id: string) => `/product/${id}`,
-    demo: {
-      details: `/product/${MOCK_ID}`,
-    },
-  },
-  post: {
-    root: `/post`,
-    details: (title: string) => `/post/${paramCase(title)}`,
-    demo: {
-      details: `/post/${paramCase(MOCK_TITLE)}`,
-    },
-  },
   // AUTH
   auth: {
     amplify: {
@@ -118,6 +89,7 @@ export const paths = {
       root: `${ROOTS.DASHBOARD}/user`,
       new: `${ROOTS.DASHBOARD}/user/new`,
       list: `${ROOTS.DASHBOARD}/user/list`,
+      hours: `${ROOTS.DASHBOARD}/user/hours`,
       cards: `${ROOTS.DASHBOARD}/user/cards`,
       profile: `${ROOTS.DASHBOARD}/user/profile`,
       account: `${ROOTS.DASHBOARD}/user/account`,

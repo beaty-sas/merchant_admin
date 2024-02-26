@@ -72,7 +72,7 @@ export function useNavData() {
           },
           {
             title: 'Графік роботи',
-            path: paths.dashboard.user.list,
+            path: paths.dashboard.user.hours,
             icon: ICONS.kanban,
           },
         ],
