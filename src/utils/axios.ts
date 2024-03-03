@@ -54,7 +54,6 @@ export const endpoints = {
   booking: {
     list: '/api/booking/business/',
     info: '/api/booking/',
-    cancel: '/api/booking/',
   },
   business: {
     list: '/api/businesses/',

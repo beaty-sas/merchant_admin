@@ -62,7 +62,7 @@ export function useGetBookingInfo(booking_id: number): {
 // ----------------------------------------------------------------------
 
 export async function cancelBooking(booking_id: number, business_id: number) {
-  const URL = endpoints.booking.cancel + booking_id + '/cancel';
+  const URL = endpoints.booking.info + booking_id + '/cancel';
   const mutateURL = endpoints.booking.list + business_id;
 
   /**
@@ -83,6 +83,39 @@ export async function cancelBooking(booking_id: number, business_id: number) {
             status: 'CANCELLED',
           };
         }
+      });
+
+      return bookings;
+    },
+    false
+  );
+}
+
+// ----------------------------------------------------------------------
+
+export async function confirmBooking(booking_id: number, business_id: number) {
+  const URL = endpoints.booking.info + booking_id + '/confirm';
+  const mutateURL = endpoints.booking.list + business_id;
+
+  /**
+   * Work on server
+   */
+  await axiosInstance.patch(URL);
+
+  /**
+   * Work in local
+   */
+  mutate(
+    mutateURL,
+    (currentData: any) => {
+      const bookings: IBooking[] = currentData.map((booking: IBooking) => {
+        if (booking.id === booking_id) {
+          return {
+            ...booking,
+            status: 'CONFIRMED',
+          };
+        }
+        return booking;
       });
 
       return bookings;
