@@ -44,13 +44,30 @@ export async function createNewWorkingHour(businessId: number, data: IWorkingHou
     (currentData: any) => {
       const newData = data.map((item) => {
         return {
-          date: item.date,
-          opening_time: item.opening_time.split('T')[1].split('.')[0],
-          closing_time: item.closing_time.split('T')[1].split('.')[0],
+          date_from: item.date_from,
+          date_to: item.date_to,
         };
       })
 
       return [...currentData, ...newData];
+    },
+    false
+  );
+}
+
+// ----------------------------------------------------------------------
+
+export async function deleteWorkingHour(businessId: number, workingHourId: number) {
+  const URL = endpoints.workingHours.list + `${workingHourId}?business_id=${businessId}`;
+  const MUTATE_URL = endpoints.workingHours.list + businessId;
+
+  await axiosInstance.delete(URL);
+
+  mutate(
+    MUTATE_URL,
+    (currentData: any) => {
+      if (!currentData) return [];
+      return currentData.filter((item: any) => item.id !== workingHourId);
     },
     false
   );

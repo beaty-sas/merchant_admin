@@ -149,7 +149,9 @@ function BookingDetailsRow({ row, businessId }: BookingDetailsRowProps) {
           <Label
             variant={lightMode ? 'soft' : 'filled'}
             color={
-              (row.status === 'ACTIVE' && 'success') ||
+              ('NEW' === row.status && 'info') ||
+              ('CONFIRMED' === row.status && 'success') ||
+              ('COMPLETED' === row.status && 'default') ||
               'error'
             }
           >

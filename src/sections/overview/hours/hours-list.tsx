@@ -15,6 +15,9 @@ import Scrollbar from 'src/components/scrollbar';
 import { TableHeadCustom } from 'src/components/table';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { IWorkingHour } from 'src/types/working-hours';
+import { format } from 'date-fns';
+import { uk } from 'date-fns/locale';
+import { deleteWorkingHour } from 'src/api/working-hours';
 
 // ----------------------------------------------------------------------
 
@@ -23,6 +26,7 @@ interface Props extends CardProps {
   subheader?: string;
   tableData: IWorkingHour[];
   tableLabels: any;
+  businessId: number;
 }
 
 export default function HoursTableList({
@@ -30,6 +34,7 @@ export default function HoursTableList({
   subheader,
   tableLabels,
   tableData,
+  businessId,
   ...other
 }: Props) {
   return (
@@ -43,7 +48,7 @@ export default function HoursTableList({
 
             <TableBody>
               {tableData.map((row) => (
-                <OfferRow key={row.id} row={row} />
+                <OfferRow key={row.id} row={row} businessId={businessId}/>
               ))}
             </TableBody>
           </Table>
@@ -57,29 +62,32 @@ export default function HoursTableList({
 
 type OfferRowProps = {
   row: IWorkingHour;
+  businessId: number;
 };
 
-function OfferRow({ row }: OfferRowProps) {
+function OfferRow({ row, businessId }: OfferRowProps) {
   const popover = usePopover();
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
+    await deleteWorkingHour(businessId, row.id);
     popover.onClose();
-    console.info('DELETE', row.id);
   };
+
+  const formattedDate = String(format(new Date(row.date_from),'EEEE, d MMMM', { locale: uk }).charAt(0).toUpperCase() + format(new Date(row.date_from),'EEEE, d MMMM', { locale: uk }).slice(1));
 
   return (
     <>
       <TableRow>
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          <ListItemText primary={row.date} />
+          <ListItemText primary={formattedDate} />
         </TableCell>
 
         <TableCell align="right">
-          {row.opening_time}
+          {new Date(row.date_from).toLocaleTimeString('ua-UK', { hour: '2-digit', minute: '2-digit', hour12: false })}
         </TableCell>
 
         <TableCell align="right">
-          {row.closing_time}
+          {new Date(row.date_to).toLocaleTimeString('ua-UK', { hour: '2-digit', minute: '2-digit', hour12: false})}
         </TableCell>
 
         <TableCell align="right" sx={{ pr: 1 }}>

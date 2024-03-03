@@ -3,6 +3,7 @@ import { paths } from 'src/routes/paths';
 // API
 // ----------------------------------------------------------------------
 
+export const HOST = process.env.NEXT_PUBLIC_HOST;
 export const HOST_API = process.env.NEXT_PUBLIC_HOST_API;
 export const ASSETS_API = process.env.NEXT_PUBLIC_ASSETS_API;
 
@@ -28,6 +29,7 @@ export const AUTH0_API = {
   callbackUrl: process.env.NEXT_PUBLIC_AUTH0_CALLBACK_URL,
   scope: process.env.NEXT_PUBLIC_AUTH0_SCOPE,
   audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE,
+  logout_url: process.env.NEXT_PUBLIC_AUTH0_LOGOUT_URL,
 };
 
 export const SUPABASE_API = {

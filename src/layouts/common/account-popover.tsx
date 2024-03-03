@@ -12,27 +12,23 @@ import Typography from '@mui/material/Typography';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-import { useMockedUser } from 'src/hooks/use-mocked-user';
-
 import { useAuthContext } from 'src/auth/hooks';
 
 import { varHover } from 'src/components/animate';
 import { useSnackbar } from 'src/components/snackbar';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import { useAuth0 } from '@auth0/auth0-react';
+import { AUTH0_API } from 'src/config-global';
 
 // ----------------------------------------------------------------------
 
 const OPTIONS = [
   {
-    label: 'Home',
+    label: 'Головна',
     linkTo: '/',
   },
   {
-    label: 'Profile',
-    linkTo: paths.dashboard.user.profile,
-  },
-  {
-    label: 'Settings',
+    label: 'Профіль',
     linkTo: paths.dashboard.user.account,
   },
 ];
@@ -41,8 +37,7 @@ const OPTIONS = [
 
 export default function AccountPopover() {
   const router = useRouter();
-
-  const { user } = useMockedUser();
+  const { user } = useAuth0()
 
   const { logout } = useAuthContext();
 
@@ -52,12 +47,12 @@ export default function AccountPopover() {
 
   const handleLogout = async () => {
     try {
-      await logout();
+      await logout({ logoutParams: {returnTo: AUTH0_API.logout_url} });
       popover.onClose();
       router.replace('/');
     } catch (error) {
       console.error(error);
-      enqueueSnackbar('Unable to logout!', { variant: 'error' });
+      enqueueSnackbar('Не вийшло вийти!', { variant: 'error' });
     }
   };
 
@@ -85,22 +80,22 @@ export default function AccountPopover() {
         }}
       >
         <Avatar
-          src={user?.photoURL}
-          alt={user?.displayName}
+          src={user?.picture}
+          alt={user?.email}
           sx={{
             width: 36,
             height: 36,
             border: (theme) => `solid 2px ${theme.palette.background.default}`,
           }}
         >
-          {user?.displayName?.charAt(0).toUpperCase()}
+          {user?.email?.charAt(0).toUpperCase()}
         </Avatar>
       </IconButton>
 
       <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 200, p: 0 }}>
         <Box sx={{ p: 2, pb: 1.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {user?.displayName}
+            {user?.name}
           </Typography>
 
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
@@ -124,7 +119,7 @@ export default function AccountPopover() {
           onClick={handleLogout}
           sx={{ m: 1, fontWeight: 'fontWeightBold', color: 'error.main' }}
         >
-          Logout
+          Вихід
         </MenuItem>
       </CustomPopover>
     </>

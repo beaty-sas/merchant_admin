@@ -16,6 +16,7 @@ import Scrollbar from 'src/components/scrollbar';
 import { TableHeadCustom } from 'src/components/table';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { IOffer } from 'src/types/offer';
+import { deleteOffer } from 'src/api/offer';
 
 // ----------------------------------------------------------------------
 
@@ -24,6 +25,8 @@ interface Props extends CardProps {
   subheader?: string;
   tableData: IOffer[];
   tableLabels: any;
+  businessSlug: string;
+  onEditRow: (id: number) => void;
 }
 
 export default function OfferTableList({
@@ -31,6 +34,8 @@ export default function OfferTableList({
   subheader,
   tableLabels,
   tableData,
+  businessSlug,
+  onEditRow,
   ...other
 }: Props) {
   return (
@@ -44,7 +49,12 @@ export default function OfferTableList({
 
             <TableBody>
               {tableData.map((row) => (
-                <OfferRow key={row.id} row={row} />
+                <OfferRow
+                  key={row.id}
+                  row={row}
+                  businessSlug={businessSlug}
+                  onEditRow={onEditRow}
+                />
               ))}
             </TableBody>
           </Table>
@@ -60,14 +70,21 @@ export default function OfferTableList({
 
 type OfferRowProps = {
   row: IOffer;
+  businessSlug: string;
+  onEditRow: (id: number) => void;
 };
 
-function OfferRow({ row }: OfferRowProps) {
+function OfferRow({ row, businessSlug, onEditRow }: OfferRowProps) {
   const popover = usePopover();
 
-  const handleDelete = () => {
+  const handleEditRow = () => {
+    onEditRow(row.id)
     popover.onClose();
-    console.info('DELETE', row.id);
+  }
+
+  const handleDelete = async () => {
+    await deleteOffer(row.id, businessSlug);
+    popover.onClose();
   };
 
   return (
@@ -99,6 +116,16 @@ function OfferRow({ row }: OfferRowProps) {
         arrow="right-top"
         sx={{ width: 160 }}
       >
+        <MenuItem
+          onClick={() => {
+            handleEditRow();
+            popover.onClose();
+          }}
+        >
+          <Iconify icon="solar:pen-bold" />
+          Змінити
+        </MenuItem>
+
         <MenuItem onClick={handleDelete} sx={{ color: 'error.main' }}>
           <Iconify icon="solar:trash-bin-trash-bold" />
           Видалити

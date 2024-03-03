@@ -52,19 +52,19 @@ export const endpoints = {
   },
   // -----------------------------
   booking: {
-    list: '/booking/business/',
-    info: '/booking/',
-    cancel: '/booking/',
+    list: '/api/booking/business/',
+    info: '/api/booking/',
+    cancel: '/api/booking/',
   },
   business: {
-    list: '/businesses/',
-    my: '/businesses/my',
+    list: '/api/businesses/',
+    my: '/api/businesses/my',
   },
   offer: {
-    list: '/offers', 
+    list: '/api/offers', 
   },
   workingHours: {
-    list: '/working-hours/',
+    list: '/api/working-hours/',
   },
-  attachements: '/attachments/',
+  attachements: '/api/attachments/',
 };
