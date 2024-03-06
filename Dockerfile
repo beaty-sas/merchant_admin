@@ -9,7 +9,7 @@ ENV NEXT_PUBLIC_AUTH0_AUDIENCE=https://reserve-exp.eu.auth0.com/api/v2/
 ENV NEXT_PUBLIC_AUTH0_SCOPE="openid profile email"
 ENV NEXT_PUBLIC_AUTH0_CALLBACK_URL=https://merchant.reserve.expert/auth/auth0/callback
 ENV NEXT_PUBLIC_HOST_API=https://api.reserve.expert
-ENV NEXT_PUBLIC_AUTH0_LOGOUT_URL=https://merchant.reserve.
+ENV NEXT_PUBLIC_AUTH0_LOGOUT_URL=https://merchant.reserve.expert
 ENV NEXT_PUBLIC_HOST=https://reserve.expert
 
 COPY package.json yarn.lock ./
