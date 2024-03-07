@@ -1,10 +1,12 @@
 export type IWorkingHour = {
   id: number;
-  date_from: string;
-  date_to: string;
+  date: string;
+  opening_time: string;
+  closing_time: string;
 };
 
 export type IWorkingHourForm = {
-  date_from: string;
-  date_to: string;
+  date: string;
+  opening_time: string;
+  closing_time: string;
 };

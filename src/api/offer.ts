@@ -7,14 +7,14 @@ import { IOffer, IOfferCreate } from 'src/types/offer';
 
 // ----------------------------------------------------------------------
 
-export function useGetMyOffers(businessId: string): {
+export function useGetMyOffers(businessId: number): {
   offers: IOffer[];
   offersLoading: boolean;
   offersError: any;
   offersValidating: boolean;
   offersEmpty: boolean;
 } {
-  const URL = endpoints.offer.list + `?slug=${businessId}`;
+  const URL = endpoints.offer.list + `?business_id=${businessId}`;
 
   const { data, isLoading, error, isValidating } = useSWR(URL, fetcher);
 
@@ -34,59 +34,16 @@ export function useGetMyOffers(businessId: string): {
 
 // ----------------------------------------------------------------------
 
-export async function createNewOffer(data: IOfferCreate, slug: string) {
+export async function createNewOffer(data: IOfferCreate) {
   const URL = endpoints.offer.list;
-  const MUTATE_URL = endpoints.offer.list + `?slug=${slug}`;
+  const MUTATE_URL = endpoints.offer.list + `?business_id=${data.business_id}`;
 
-  const respose = await axiosInstance.post(URL, data);
+  await axiosInstance.post(URL, data);
 
   mutate(
     MUTATE_URL,
     (currentData: any) => {
-      if (!currentData) return [data];
-      data.id = respose.data.id;
       return [...currentData, data];
-    },
-    false
-  );
-}
-
-// ----------------------------------------------------------------------
-
-export async function deleteOffer(offerId: number, slug: string) {
-  const URL = endpoints.offer.list + `/${offerId}/delete?slug=${slug}`;
-  const MUTATE_URL = endpoints.offer.list + `?slug=${slug}`;
-
-  await axiosInstance.delete(URL);
-
-  mutate(
-    MUTATE_URL,
-    (currentData: any) => {
-      if (!currentData) return [];
-      return currentData.filter((item: any) => item.id !== offerId)
-    },
-    false
-  );
-}
-
-// ----------------------------------------------------------------------
-
-export async function updateOffer(data: IOfferCreate, slug: string) {
-  const URL = endpoints.offer.list + `/${data.id}`;
-  const MUTATE_URL = endpoints.offer.list + `?slug=${slug}`;
-
-  await axiosInstance.patch(URL, data);
-
-  mutate(
-    MUTATE_URL,
-    (currentData: any) => {
-      if (!currentData) return [];
-      return currentData.map((item: any) => {
-        if (item.id === data.id) {
-          return data;
-        }
-        return item;
-      });
     },
     false
   );

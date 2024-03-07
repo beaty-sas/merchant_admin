@@ -11,19 +11,17 @@ import DialogActions from '@mui/material/DialogActions';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
-import { createNewOffer, updateOffer } from 'src/api/offer';
-import { IOffer, IOfferCreate } from 'src/types/offer';
+import { createNewOffer } from 'src/api/offer';
+import { IOfferCreate } from 'src/types/offer';
 
 // ----------------------------------------------------------------------
 
 type Props = {
   onClose: VoidFunction;
   businessId: number;
-  businessSlug: string;
-  offer?: IOffer;
 };
 
-export default function OfferForm({ onClose, businessId, businessSlug, offer }: Props) {
+export default function OfferForm({ onClose, businessId }: Props) {
   const { enqueueSnackbar } = useSnackbar();
 
   const OfferSchema = Yup.object().shape({
@@ -32,14 +30,7 @@ export default function OfferForm({ onClose, businessId, businessSlug, offer }: 
     duration: Yup.number().required('Тривалість обов`язкова'),
   });
 
-  const methods = useForm({
-    defaultValues: {
-      name: offer?.name || '',
-      price: offer?.price || 0,
-      duration: Number(offer?.duration) / 60 || 0,
-    }, 
-    resolver: yupResolver(OfferSchema)
-   });
+  const methods = useForm({ resolver: yupResolver(OfferSchema) });
 
   const {
     reset,
@@ -47,7 +38,7 @@ export default function OfferForm({ onClose, businessId, businessSlug, offer }: 
     formState: { isSubmitting },
   } = methods;
 
-  const onSubmitForm = handleSubmit(async (data) => {
+  const onSubmit = handleSubmit(async (data) => {
     const offerData: IOfferCreate = {
       name: data?.name,
       price: data?.price,
@@ -55,18 +46,9 @@ export default function OfferForm({ onClose, businessId, businessSlug, offer }: 
       business_id: businessId,
     } as IOfferCreate;
 
-    if (offer) {
-      offerData.id = offer.id;
-    }
-    
     try {
-      if (offer) {
-        await updateOffer(offerData, businessSlug);
-        enqueueSnackbar('Успішно змінено!')
-      } else {
-        await createNewOffer(offerData, businessSlug);
-        enqueueSnackbar('Успішно створено!')
-      }
+      await createNewOffer(offerData);
+      enqueueSnackbar('Успішно створено!');
       onClose();
       reset();
     }
@@ -76,7 +58,7 @@ export default function OfferForm({ onClose, businessId, businessSlug, offer }: 
   });
 
   return (
-    <FormProvider methods={methods} onSubmit={onSubmitForm}>
+    <FormProvider methods={methods} onSubmit={onSubmit}>
       <Stack spacing={3} sx={{ px: 3 }}>
         <RHFTextField name="name" label="Назва" />
         <RHFTextField name="price" label="Ціна, грн" type="number"/>

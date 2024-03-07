@@ -17,7 +17,7 @@ export default function AccountView() {
       <CustomBreadcrumbs
         heading="Профіль"
         links={[
-          { name: 'Головна', href: paths.dashboard.root },
+          { name: 'Гловна', href: paths.dashboard.root },
           { name: 'Профіль' },
         ]}
         sx={{

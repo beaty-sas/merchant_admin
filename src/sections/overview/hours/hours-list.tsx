@@ -9,14 +9,12 @@ import Card, { CardProps } from '@mui/material/Card';
 import ListItemText from '@mui/material/ListItemText';
 import TableContainer from '@mui/material/TableContainer';
 
+
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { TableHeadCustom } from 'src/components/table';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { IWorkingHour } from 'src/types/working-hours';
-import { format } from 'date-fns';
-import { uk } from 'date-fns/locale';
-import { deleteWorkingHour } from 'src/api/working-hours';
 
 // ----------------------------------------------------------------------
 
@@ -25,7 +23,6 @@ interface Props extends CardProps {
   subheader?: string;
   tableData: IWorkingHour[];
   tableLabels: any;
-  businessId: number;
 }
 
 export default function HoursTableList({
@@ -33,7 +30,6 @@ export default function HoursTableList({
   subheader,
   tableLabels,
   tableData,
-  businessId,
   ...other
 }: Props) {
   return (
@@ -47,7 +43,7 @@ export default function HoursTableList({
 
             <TableBody>
               {tableData.map((row) => (
-                <OfferRow key={row.id} row={row} businessId={businessId}/>
+                <OfferRow key={row.id} row={row} />
               ))}
             </TableBody>
           </Table>
@@ -61,32 +57,29 @@ export default function HoursTableList({
 
 type OfferRowProps = {
   row: IWorkingHour;
-  businessId: number;
 };
 
-function OfferRow({ row, businessId }: OfferRowProps) {
+function OfferRow({ row }: OfferRowProps) {
   const popover = usePopover();
 
-  const handleDelete = async () => {
-    await deleteWorkingHour(businessId, row.id);
+  const handleDelete = () => {
     popover.onClose();
+    console.info('DELETE', row.id);
   };
-
-  const formattedDate = String(format(new Date(row.date_from),'EEEE, d MMMM', { locale: uk }).charAt(0).toUpperCase() + format(new Date(row.date_from),'EEEE, d MMMM', { locale: uk }).slice(1));
 
   return (
     <>
       <TableRow>
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          <ListItemText primary={formattedDate} />
+          <ListItemText primary={row.date} />
         </TableCell>
 
         <TableCell align="right">
-          {new Date(row.date_from).toLocaleTimeString('ua-UK', { hour: '2-digit', minute: '2-digit', hour12: false })}
+          {row.opening_time}
         </TableCell>
 
         <TableCell align="right">
-          {new Date(row.date_to).toLocaleTimeString('ua-UK', { hour: '2-digit', minute: '2-digit', hour12: false})}
+          {row.closing_time}
         </TableCell>
 
         <TableCell align="right" sx={{ pr: 1 }}>

@@ -12,12 +12,9 @@ export type ILocation = {
 export type IBusiness = {
   id: number;
   display_name: string;
-  slug: string;
   phone_number: string;
   location?: ILocation | null;
   logo?: IAttachment | null;
-  banner?: IAttachment | null;
-  description?: string | null;
 };
 
 export type IBusinessUpdate = {
@@ -25,6 +22,4 @@ export type IBusinessUpdate = {
   phone_number: string;
   location?: {name: string};
   logo_id?: number | null;
-  banner_id?: number | null;
-  description?: string | null;
 };

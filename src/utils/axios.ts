@@ -54,16 +54,17 @@ export const endpoints = {
   booking: {
     list: '/api/booking/business/',
     info: '/api/booking/',
+    cancel: '/api/booking/',
   },
   business: {
-    list: '/api/businesses/',
-    my: '/api/businesses/my',
+    list: '/businesses/',
+    my: '/businesses/my',
   },
   offer: {
-    list: '/api/offers', 
+    list: '/offers', 
   },
   workingHours: {
-    list: '/api/working-hours/',
+    list: '/working-hours/',
   },
-  attachements: '/api/attachments/',
+  attachements: '/attachments/',
 };

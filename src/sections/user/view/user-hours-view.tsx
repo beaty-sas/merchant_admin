@@ -62,7 +62,6 @@ export default function UserHoursView() {
             
             ]}
             tableData={workingHours}
-            businessId={business?.id || 0}
           />
         </Card>
 

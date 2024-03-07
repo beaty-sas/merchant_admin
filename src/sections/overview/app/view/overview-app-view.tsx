@@ -7,6 +7,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 import { useAuth0 } from '@auth0/auth0-react';
 
 import { SeoIllustration } from 'src/assets/illustrations';
+import { _appAuthors, _appRelated, _appFeatured, _appInvoices, _appInstalled, _bookings } from 'src/_mock';
 
 import { useSettingsContext } from 'src/components/settings';
 
@@ -15,7 +16,6 @@ import AppWidgetSummary from '../app-widget-summary';
 import BookingDetails from '../../booking/booking-details';
 import { useGetBookings } from 'src/api/booking';
 import { useGetMyBusiness } from 'src/api/business';
-import { HOST } from 'src/config-global';
 
 // ----------------------------------------------------------------------
 
@@ -34,7 +34,7 @@ export default function OverviewAppView() {
         <Grid xs={12}>
           <AppWelcome
             title={`З поверненням 👋 \n ${user?.name}`}
-            description={`Ваше посиллання для бронювань: ${HOST}/booking/${business?.slug}`}
+            description="If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything."
             img={<SeoIllustration />}
           />
         </Grid>

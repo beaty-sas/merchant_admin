@@ -6,7 +6,6 @@ export type IOffer = {
 };
 
 export type IOfferCreate = {
-  id?: number;
   name: string;
   price: number;
   duration: number;

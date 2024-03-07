@@ -16,7 +16,6 @@ import Scrollbar from 'src/components/scrollbar';
 import { TableHeadCustom } from 'src/components/table';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { IOffer } from 'src/types/offer';
-import { deleteOffer } from 'src/api/offer';
 
 // ----------------------------------------------------------------------
 
@@ -25,8 +24,6 @@ interface Props extends CardProps {
   subheader?: string;
   tableData: IOffer[];
   tableLabels: any;
-  businessSlug: string;
-  onEditRow: (id: number) => void;
 }
 
 export default function OfferTableList({
@@ -34,8 +31,6 @@ export default function OfferTableList({
   subheader,
   tableLabels,
   tableData,
-  businessSlug,
-  onEditRow,
   ...other
 }: Props) {
   return (
@@ -49,12 +44,7 @@ export default function OfferTableList({
 
             <TableBody>
               {tableData.map((row) => (
-                <OfferRow
-                  key={row.id}
-                  row={row}
-                  businessSlug={businessSlug}
-                  onEditRow={onEditRow}
-                />
+                <OfferRow key={row.id} row={row} />
               ))}
             </TableBody>
           </Table>
@@ -70,21 +60,14 @@ export default function OfferTableList({
 
 type OfferRowProps = {
   row: IOffer;
-  businessSlug: string;
-  onEditRow: (id: number) => void;
 };
 
-function OfferRow({ row, businessSlug, onEditRow }: OfferRowProps) {
+function OfferRow({ row }: OfferRowProps) {
   const popover = usePopover();
 
-  const handleEditRow = () => {
-    onEditRow(row.id)
+  const handleDelete = () => {
     popover.onClose();
-  }
-
-  const handleDelete = async () => {
-    await deleteOffer(row.id, businessSlug);
-    popover.onClose();
+    console.info('DELETE', row.id);
   };
 
   return (
@@ -116,16 +99,6 @@ function OfferRow({ row, businessSlug, onEditRow }: OfferRowProps) {
         arrow="right-top"
         sx={{ width: 160 }}
       >
-        <MenuItem
-          onClick={() => {
-            handleEditRow();
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="solar:pen-bold" />
-          Змінити
-        </MenuItem>
-
         <MenuItem onClick={handleDelete} sx={{ color: 'error.main' }}>
           <Iconify icon="solar:trash-bin-trash-bold" />
           Видалити

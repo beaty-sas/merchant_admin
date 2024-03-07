@@ -53,7 +53,7 @@ export function useNavData() {
       // OVERVIEW
       // ----------------------------------------------------------------------
       {
-        subheader: '',
+        subheader: t('overview'),
         items: [
           {
             title: 'Головна',

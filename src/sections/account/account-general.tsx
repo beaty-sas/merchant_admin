@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -19,7 +19,6 @@ import { fData } from 'src/utils/format-number';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, {
   RHFTextField,
-  RHFUpload,
   RHFUploadAvatar,
 } from 'src/components/hook-form';
 import { makeNewAttachment, updateMyBusiness, useGetMyBusiness } from 'src/api/business';
@@ -27,48 +26,37 @@ import OfferList from '../overview/offers/offers-list';
 import { useGetMyOffers } from 'src/api/offer';
 import { useBoolean } from 'src/hooks/use-boolean';
 import OfferForm from '../offer/offer-form';
-import { IOffer } from 'src/types/offer';
 
 // -----------------------AccountGeneral-----------------------------------------------
 
 type BusinessType = {
   displayName: string;
   photoURL: any;
-  bannerURL: any;
   phoneNumber: string;
   address: string;
   logoId: number | null;
-  bannerId: number | null;
-  description: string | null;
 };
 
 export default function AccountGeneral() {
   const { enqueueSnackbar } = useSnackbar();
   const { business } = useGetMyBusiness()
-  const { offers } = useGetMyOffers(business?.slug || '');
+  const { offers } = useGetMyOffers(business?.id || 0);
   const dialog = useBoolean();
-  const [selecterOffer, setSelecterOffer] = useState<IOffer | null>(null);
 
   const UpdateBusinessSchema = Yup.object().shape({
     displayName: Yup.string().required('Ім`я обовязкове'),
     photoURL: Yup.mixed<any>().nullable().required('Фото обов`язкове'),
-    bannerURL: Yup.mixed<any>().nullable().required('Фото обов`язкове'),
     phoneNumber: Yup.string().required('Телефон обов`язковий'),
     address: Yup.string().required('Адреса обов`язкова'),
     logoId: Yup.number().nullable(),
-    bannerId: Yup.number().nullable(),
-    description: Yup.string().nullable(),
   });
 
   const defaultValues: BusinessType = {
     displayName: business?.display_name || '',
     photoURL: business?.logo?.original || null,
-    bannerURL: business?.banner?.original || null,
     phoneNumber: business?.phone_number || '',
     address: business?.location?.name || '',
     logoId: business?.logo?.id || null,
-    bannerId: business?.banner?.id || null,
-    description: business?.description || '',
   };
 
   const methods = useForm({
@@ -79,25 +67,14 @@ export default function AccountGeneral() {
   const {
     setValue,
     handleSubmit,
-    formState: { isSubmitting, isDirty },
+    formState: { isSubmitting },
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
-    if (!isDirty) {
-      return;
-    }
-    
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
       enqueueSnackbar('Зміни успішно збережено!');
-      await updateMyBusiness(business.id, {
-        display_name: data.displayName,
-        phone_number: data.phoneNumber,
-        logo_id: data.logoId,
-        banner_id: data.bannerId,
-        description: data.description,
-        location: { name: data.address },
-      });
+      await updateMyBusiness(business.id, { display_name: data.displayName, phone_number: data.phoneNumber, logo_id: data.logoId, location: { name: data.address } });
     } catch (error) {
       enqueueSnackbar('Зміни не збережено! Спробуйте ще раз', { variant: 'error' });
     }
@@ -123,31 +100,10 @@ export default function AccountGeneral() {
     [setValue]
   );
 
-  const handleDropBanner = useCallback(
-    async (acceptedFiles: File[]) => {
-      const file = acceptedFiles[0];
-
-      const banner = await makeNewAttachment(file);
-
-      const newFile = Object.assign(file, {
-        preview: URL.createObjectURL(file),
-      });
-
-      if (file) {
-        setValue('bannerURL', newFile, { shouldValidate: true });
-      }
-      if (banner) {
-        setValue('bannerId', banner.id, { shouldValidate: false })
-      }
-    },
-    [setValue]
-  );
-
   useEffect(() => {
     if (business) {
       setValue('displayName', business.display_name);
       setValue('photoURL', business.logo?.original || null);
-      setValue('bannerURL', business.banner?.original || null);
       setValue('phoneNumber', business.phone_number || '');
       setValue('address', business?.location?.name || '');
     }
@@ -157,18 +113,11 @@ export default function AccountGeneral() {
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
         <Grid xs={12} md={4}>
-          <Card sx={{ pt: 2, pb: 5, px: 3, textAlign: 'center' }}>
-            <RHFUpload
-              multiple={false}
-              name="bannerURL"
-              maxSize={3145728}
-              onDrop={handleDropBanner}
-            />
+          <Card sx={{ pt: 10, pb: 5, px: 3, textAlign: 'center' }}>
             <RHFUploadAvatar
               name="photoURL"
               maxSize={3145728}
               onDrop={handleDrop}
-              sx={{ mt: 3 }}
               helperText={
                 <Typography
                   variant="caption"
@@ -195,10 +144,9 @@ export default function AccountGeneral() {
               columnGap={2}
               display="grid"
             >
-              <RHFTextField name="displayName" label="Назва" required />
-              <RHFTextField name="phoneNumber" label="Номер телефону" required />
-              <RHFTextField name="address" label="Адреса" required />
-              <RHFTextField name="description" label="Опис" multiline minRows={3} />
+              <RHFTextField name="displayName" label="Назва" />
+              <RHFTextField name="phoneNumber" label="Номер телефону" />
+              <RHFTextField name="address" label="Адреса" />
 
             </Box>
 
@@ -221,11 +169,6 @@ export default function AccountGeneral() {
               { id: '' },
             ]}
             tableData={offers}
-            businessSlug={business?.slug || ''}
-            onEditRow={(offerId) => {
-              setSelecterOffer(offers.find((offer) => offer.id === offerId) || null);
-              dialog.onTrue();
-            }}
           />
           <Box sx={{ p: 2, textAlign: 'right' }}>
             <Button
@@ -244,18 +187,10 @@ export default function AccountGeneral() {
             onClose={dialog.onFalse}
           >
             <DialogTitle sx={{ minHeight: 76 }}>
-              {selecterOffer ? 'Змінити послугу' : 'Нова послуга'}
+               Нова послуга
             </DialogTitle>
 
-            <OfferForm
-              onClose={() => {
-                setSelecterOffer(null);
-                dialog.onFalse();
-              }}
-              businessId={business?.id || 0}
-              businessSlug={business?.slug || ''}
-              offer={selecterOffer}
-            />
+            <OfferForm onClose={dialog.onFalse} businessId={business?.id || 0}/>
           </Dialog>
         </Grid>
       </Grid>

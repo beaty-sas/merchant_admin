@@ -21,7 +21,7 @@ import { TableHeadCustom } from 'src/components/table';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { IBooking } from 'src/types/booking';
 import { Typography } from '@mui/material';
-import { cancelBooking, confirmBooking } from 'src/api/booking';
+import { cancelBooking } from 'src/api/booking';
 import { enqueueSnackbar } from 'notistack';
 
 // ----------------------------------------------------------------------
@@ -86,12 +86,6 @@ function BookingDetailsRow({ row, businessId }: BookingDetailsRowProps) {
     enqueueSnackbar('Бронювання відмінено!', { variant: 'error' });
   };
 
-  const handleConfirmRow = async () => {
-    popover.onClose();
-    await confirmBooking(row.id, businessId);
-    enqueueSnackbar('Бронювання підтверджено!', { variant: 'success' });
-  }
-
   return (
     <>
       <TableRow>
@@ -155,9 +149,7 @@ function BookingDetailsRow({ row, businessId }: BookingDetailsRowProps) {
           <Label
             variant={lightMode ? 'soft' : 'filled'}
             color={
-              ('NEW' === row.status && 'info') ||
-              ('CONFIRMED' === row.status && 'success') ||
-              ('COMPLETED' === row.status && 'default') ||
+              (row.status === 'ACTIVE' && 'success') ||
               'error'
             }
           >
@@ -178,18 +170,6 @@ function BookingDetailsRow({ row, businessId }: BookingDetailsRowProps) {
         arrow="right-top"
         sx={{ width: 160 }}
       >
-        {row.status === 'NEW' && (
-          <MenuItem
-            onClick={() => {
-              popover.onClose();
-              handleConfirmRow();
-            }}
-          >
-            <Iconify icon="eva:checkmark-circle-2-fill" />
-            Підтвердити
-          </MenuItem>
-        )}
-
         <MenuItem onClick={handleDelete} sx={{ color: 'error.main' }}>
           <Iconify icon="solar:trash-bin-trash-bold" />
           Відмінити

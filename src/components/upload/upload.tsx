@@ -50,7 +50,21 @@ export default function Upload({
     <Stack spacing={3} alignItems="center" justifyContent="center" flexWrap="wrap">
       <UploadIllustration sx={{ width: 1, maxWidth: 200 }} />
       <Stack spacing={1} sx={{ textAlign: 'center' }}>
-        <Typography variant="h6">Перетягніть або виберіть файл</Typography>
+        <Typography variant="h6">Drop or Select file</Typography>
+        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+          Drop files here or click
+          <Box
+            component="span"
+            sx={{
+              mx: 0.5,
+              color: 'primary.main',
+              textDecoration: 'underline',
+            }}
+          >
+            browse
+          </Box>
+          thorough your machine
+        </Typography>
       </Stack>
     </Stack>
   );
