@@ -20,7 +20,7 @@ type Props = {
   onClose: VoidFunction;
   businessId: number;
   businessSlug: string;
-  offer?: IOffer;
+  offer?: IOffer | null;
 };
 
 export default function OfferForm({ onClose, businessId, businessSlug, offer }: Props) {
