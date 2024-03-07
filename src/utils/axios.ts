@@ -52,8 +52,8 @@ export const endpoints = {
   },
   // -----------------------------
   booking: {
-    list: '/booking/business/',
-    info: '/booking/',
+    list: '/api/booking/business/',
+    info: '/api/booking/',
     cancel: '/api/booking/',
   },
   business: {
