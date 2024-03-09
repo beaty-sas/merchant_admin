@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 
 import axiosInstance, { fetcher, endpoints } from 'src/utils/axios';
 
-import { IBooking, IBookingUpdate } from 'src/types/booking';
+import { IBooking, IBookingAnalytics, IBookingUpdate } from 'src/types/booking';
 
 // ----------------------------------------------------------------------
 
@@ -83,6 +83,7 @@ export async function cancelBooking(booking_id: number, business_id: number) {
             status: 'CANCELLED',
           };
         }
+        return booking;
       });
 
       return bookings;
@@ -158,6 +159,33 @@ export async function updateBooking(booking_id: number, data: IBookingUpdate, bu
     },
     false
   );
+}
+
+// ----------------------------------------------------------------------
+
+export function getBookingAnalytics(): {
+  bookingAnalytic: IBookingAnalytics;
+  bookingAnalyticLoading: boolean;
+  bookingAnalyticError: any;
+  bookingAnalyticValidating: boolean;
+  bookingAnalyticEmpty: boolean;
+} {
+  const URL = endpoints.analytics.booking;
+
+  const { data, isLoading, error, isValidating } = useSWR(URL, fetcher);
+
+  const memoizedValue = useMemo(
+    () => ({
+      bookingAnalytic: (data as IBookingAnalytics),
+      bookingAnalyticLoading: isLoading,
+      bookingAnalyticError: error,
+      bookingAnalyticValidating: isValidating,
+      bookingAnalyticEmpty: !isLoading && !data?.length,
+    }),
+    [data, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
 }
 
 // ----------------------------------------------------------------------

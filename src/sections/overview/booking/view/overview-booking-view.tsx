@@ -15,7 +15,6 @@ import { useSettingsContext } from 'src/components/settings';
 
 import BookingBooked from '../booking-booked';
 import BookingNewest from '../booking-newest';
-import BookingDetails from '../booking-details';
 import BookingAvailable from '../booking-available';
 import BookingStatistics from '../booking-statistics';
 import BookingTotalIncomes from '../booking-total-incomes';

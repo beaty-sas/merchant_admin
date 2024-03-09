@@ -9,7 +9,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import DialogActions from '@mui/material/DialogActions';
 
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, { RHFTextField } from 'src/components/hook-form';
+import FormProvider, { RHFCheckbox, RHFTextField } from 'src/components/hook-form';
 
 import { createNewOffer, updateOffer } from 'src/api/offer';
 import { IOffer, IOfferCreate } from 'src/types/offer';
@@ -30,6 +30,7 @@ export default function OfferForm({ onClose, businessId, businessSlug, offer }: 
     name: Yup.string().max(255).required('Назва послуги обов`язкова'),
     price: Yup.number().required('Ціна обов`язкова'),
     duration: Yup.number().required('Тривалість обов`язкова'),
+    allowPhoto: Yup.boolean(),
   });
 
   const methods = useForm({
@@ -37,9 +38,10 @@ export default function OfferForm({ onClose, businessId, businessSlug, offer }: 
       name: offer?.name || '',
       price: offer?.price || 0,
       duration: Number(offer?.duration) / 60 || 0,
-    }, 
+      allowPhoto: offer?.allow_photo || false,
+    },
     resolver: yupResolver(OfferSchema)
-   });
+  });
 
   const {
     reset,
@@ -53,12 +55,13 @@ export default function OfferForm({ onClose, businessId, businessSlug, offer }: 
       price: data?.price,
       duration: data?.duration * 60,
       business_id: businessId,
+      allow_photo: data?.allowPhoto,
     } as IOfferCreate;
 
     if (offer) {
       offerData.id = offer.id;
     }
-    
+
     try {
       if (offer) {
         await updateOffer(offerData, businessSlug);
@@ -79,9 +82,9 @@ export default function OfferForm({ onClose, businessId, businessSlug, offer }: 
     <FormProvider methods={methods} onSubmit={onSubmitForm}>
       <Stack spacing={3} sx={{ px: 3 }}>
         <RHFTextField name="name" label="Назва" />
-        <RHFTextField name="price" label="Ціна, грн" type="number"/>
-        <RHFTextField name="duration" label="Тривалість, хв" type="number"/>
-
+        <RHFTextField name="price" label="Ціна, грн" type="number" />
+        <RHFTextField name="duration" label="Тривалість, хв" type="number" />
+        <RHFCheckbox name="allowPhoto" label="Дозволити завантажувати фото при записі" />
       </Stack>
 
       <DialogActions>

@@ -1,5 +1,4 @@
 import Table from '@mui/material/Table';
-import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
@@ -11,18 +10,24 @@ import CardHeader from '@mui/material/CardHeader';
 import Card, { CardProps } from '@mui/material/Card';
 import ListItemText from '@mui/material/ListItemText';
 import TableContainer from '@mui/material/TableContainer';
+import Collapse from '@mui/material/Collapse';
+import { enqueueSnackbar } from 'notistack';
+import { Typography } from '@mui/material';
+import Stack from '@mui/material/Stack';
+import Paper from '@mui/material/Paper';
 
 import { fDate, fTime } from 'src/utils/format-time';
+import { useBoolean } from 'src/hooks/use-boolean';
 
+import Image from 'src/components/image';
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { TableHeadCustom } from 'src/components/table';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { IBooking } from 'src/types/booking';
-import { Typography } from '@mui/material';
 import { cancelBooking, confirmBooking } from 'src/api/booking';
-import { enqueueSnackbar } from 'notistack';
+import { Box } from '@mui/system';
 
 // ----------------------------------------------------------------------
 
@@ -54,7 +59,7 @@ export default function BookingDetails({
 
             <TableBody>
               {tableData.map((row: IBooking) => (
-                <BookingDetailsRow key={row.id} row={row} businessId={businessId}/>
+                <BookingDetailsRow key={row.id} row={row} businessId={businessId} />
               ))}
             </TableBody>
           </Table>
@@ -75,6 +80,7 @@ type BookingDetailsRowProps = {
 
 function BookingDetailsRow({ row, businessId }: BookingDetailsRowProps) {
   const theme = useTheme();
+  const collapse = useBoolean();
 
   const lightMode = theme.palette.mode === 'light';
 
@@ -92,16 +98,55 @@ function BookingDetailsRow({ row, businessId }: BookingDetailsRowProps) {
     enqueueSnackbar('Бронювання підтверджено!', { variant: 'success' });
   }
 
+  const renderDetails = (
+    <TableRow>
+      <TableCell sx={{ p: 0, border: 'none' }} colSpan={8}>
+        <Collapse
+          in={collapse.value}
+          timeout="auto"
+          unmountOnExit
+          sx={{ bgcolor: 'background.neutral' }}
+        >
+          <Stack component={Paper} sx={{ m: 1.5 }}>
+            <Stack
+              direction="row"
+              alignItems="center"
+              sx={{
+                p: (theme) => theme.spacing(1.5, 2, 1.5, 1.5),
+                '&:not(:last-of-type)': {
+                  borderBottom: (theme) => `solid 2px ${theme.palette.background.neutral}`,
+                },
+              }}
+            >
+              <Box flex={1}>
+                <Typography variant="caption" noWrap>
+                  {row.offers.map((offer) => offer.name).join(', ')}
+                </Typography>
+              </Box>
+
+              <Box flex={1}>
+                <Typography variant="caption" noWrap>
+                  <b>Коментар:</b> {row.comment}
+                </Typography>
+              </Box>
+              
+              <Box flex={3}>
+                {row.attachments?.map((attachment) => (
+                  <Image key={attachment.id} src={attachment.original} sx={{ borderRadius: 2 }} />
+                ))}
+              </Box>
+
+            </Stack>
+          </Stack>
+        </Collapse>
+      </TableCell>
+    </TableRow>
+  );
+
   return (
     <>
       <TableRow>
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar
-            variant="rounded"
-            alt={row.user.display_name}
-            src={row.user.display_name}
-            sx={{ mr: 2, width: 48, height: 48 }}
-          />
           <ListItemText
             primary={row.user.display_name}
             secondary={row.user.phone_number}
@@ -111,12 +156,6 @@ function BookingDetailsRow({ row, businessId }: BookingDetailsRowProps) {
               component: 'span',
             }}
           />
-        </TableCell>
-
-        <TableCell>
-          <Typography variant="caption" noWrap>
-            {row.offers.map((offer) => offer.name).join(', ')}
-          </Typography>
         </TableCell>
 
         <TableCell>
@@ -166,11 +205,27 @@ function BookingDetailsRow({ row, businessId }: BookingDetailsRowProps) {
         </TableCell>
 
         <TableCell align="right" sx={{ pr: 1 }}>
-          <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-            <Iconify icon="eva:more-vertical-fill" />
+          <IconButton
+            color={collapse.value ? 'inherit' : 'default'}
+            onClick={collapse.onToggle}
+            sx={{
+              ...(collapse.value && {
+                bgcolor: 'action.hover',
+              }),
+            }}
+          >
+            <Iconify icon="eva:arrow-ios-downward-fill" />
           </IconButton>
+
+          {row.status !== 'CANCELLED' && (
+            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+              <Iconify icon="eva:more-vertical-fill" />
+            </IconButton>
+          )}
         </TableCell>
       </TableRow>
+
+      {renderDetails}
 
       <CustomPopover
         open={popover.open}

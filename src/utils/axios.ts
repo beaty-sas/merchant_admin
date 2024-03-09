@@ -66,4 +66,7 @@ export const endpoints = {
     list: '/api/working-hours/',
   },
   attachements: '/api/attachments/',
+  analytics: {
+    booking: '/api/analytics/booking',
+  },
 };
