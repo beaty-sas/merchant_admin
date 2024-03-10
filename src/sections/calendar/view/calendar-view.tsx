@@ -37,6 +37,9 @@ import { useGetMyBusiness } from 'src/api/business';
 import { useGetBookings } from 'src/api/booking';
 import { IBooking } from 'src/types/booking';
 import { secondary } from 'src/theme/palette';
+import { Button } from '@mui/material';
+import Iconify from 'src/components/iconify';
+import { useGetMyOffers } from 'src/api/offer';
 
 // ----------------------------------------------------------------------
 
@@ -60,6 +63,7 @@ export default function CalendarView() {
   const [filters, setFilters] = useState(defaultFilters);
   const { business, businessLoading } = useGetMyBusiness()
   const { bookings, bookingsLoading } = useGetBookings(business?.id || 0)
+  const { offers } = useGetMyOffers(business?.slug || '')
 
   const dateError = isAfter(filters.startDate, filters.endDate);
 
@@ -77,6 +81,7 @@ export default function CalendarView() {
     onInitialView,
     //
     openForm,
+    onOpenForm,
     onCloseForm,
     //
     selectEventId,
@@ -136,6 +141,13 @@ export default function CalendarView() {
           }}
         >
           <Typography variant="h4">Календар</Typography>
+          <Button
+            variant="contained"
+            startIcon={<Iconify icon="mingcute:add-line" />}
+            onClick={onOpenForm}
+          >
+            Додати бронювання
+          </Button>
         </Stack>
 
         {canReset && renderResults}
@@ -196,13 +208,14 @@ export default function CalendarView() {
         }}
       >
         <DialogTitle sx={{ minHeight: 76 }}>
-          {openForm && <> {currentEvent?.id ? 'Змінти бронювання' : 'Додати бронювання'}</>}
+          {openForm && <> {currentEvent?.id ? 'Змінити бронювання' : 'Додати нове бронювання'}</>}
         </DialogTitle>
 
         <CalendarForm
           currentEvent={currentEvent}
           businessId={business?.id}
           onClose={onCloseForm}
+          offers={offers}
         />
       </Dialog>
 
@@ -252,12 +265,16 @@ function applyFilter({
   const normalizedTypes = inputData.map((booking: IBooking) => {
     return {
       id: booking.id.toString(),
-      title: `${booking.user.display_name} (${booking.user.phone_number})`,
+      title: booking.user.display_name,
       start: booking.start_time.toString(),
       end: booking.end_time.toString(),
       color: secondary.main,
       allDay: false,
       description: booking.offers.map((offer) => offer.name).join(', '),
+      offers: booking.offers,
+      comment: booking.comment,
+      attachments: booking.attachments,
+      phoneNumber: booking.user.phone_number,
     };
   })
   return normalizedTypes;

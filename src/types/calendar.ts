@@ -1,5 +1,8 @@
 // ----------------------------------------------------------------------
 
+import { IAttachment } from "./business";
+import { IOffer } from "./offer";
+
 export type ICalendarFilterValue = string[] | Date | null;
 
 export type ICalendarFilters = {
@@ -21,10 +24,11 @@ export type ICalendarRange = {
 
 export type ICalendarEvent = {
   id: string;
-  color: string;
   title: string;
-  allDay: boolean;
-  description: string;
+  phoneNumber?: string;
   end: ICalendarDate;
   start: ICalendarDate;
+  comment?: string;
+  offers?: Array<IOffer>;
+  attachments?: Array<IAttachment>;
 };

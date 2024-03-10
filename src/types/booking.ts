@@ -28,3 +28,12 @@ export type IBookingAnalytics = {
   future: number;
   today: number;
 };
+
+export type IBookingCreate = {
+  start_time: Date;
+  business_id: number;
+  price: number;
+  offers: Array<number>;
+  user: IUser;
+  comment?: string;
+};

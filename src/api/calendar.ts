@@ -21,7 +21,6 @@ export function useGetEvents() {
   const memoizedValue = useMemo(() => {
     const events = data?.events.map((event: ICalendarEvent) => ({
       ...event,
-      textColor: event.color,
     }));
 
     return {

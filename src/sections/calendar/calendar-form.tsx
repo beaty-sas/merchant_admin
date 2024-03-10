@@ -20,9 +20,13 @@ import { createEvent } from 'src/api/calendar';
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
+import { Autocomplete, Chip, TextField } from '@mui/material';
 
 import { ICalendarDate, ICalendarEvent } from 'src/types/calendar';
-import { cancelBooking, updateBooking } from 'src/api/booking';
+import { cancelBooking, createNewBooking, updateBooking } from 'src/api/booking';
+import Image from 'src/components/image';
+import { IOffer } from 'src/types/offer';
+import { IBookingCreate } from 'src/types/booking';
 
 // ----------------------------------------------------------------------
 
@@ -30,16 +34,19 @@ type Props = {
   onClose: VoidFunction;
   currentEvent?: ICalendarEvent;
   businessId: number;
+  offers?: IOffer[];
 };
 
-export default function CalendarForm({ currentEvent, businessId, onClose }: Props) {
+export default function CalendarForm({ currentEvent, businessId, onClose, offers }: Props) {
   const { enqueueSnackbar } = useSnackbar();
 
   const EventSchema = Yup.object().shape({
     title: Yup.string().max(255).required('Заголовок обовязковий'),
-    description: Yup.string().max(5000, 'Перелік послуг має бути менше 5000 символів'),
+    offers: Yup.array().min(1, 'Оберіть хоча б одну послугу'),
+    comment: Yup.string().max(1000, 'Коментар має бути менше 1000 символів'),
     start: Yup.mixed(),
     end: Yup.mixed(),
+    phoneNumber: Yup.string().max(255),
   });
 
   const methods = useForm({
@@ -63,18 +70,30 @@ export default function CalendarForm({ currentEvent, businessId, onClose }: Prop
     const eventData: ICalendarEvent = {
       id: currentEvent?.id ? currentEvent?.id : uuidv4(),
       title: data?.title,
-      description: data?.description,
       end: data?.end,
       start: data?.start,
+      offers: data?.offers,
+      comment: data?.comment || '',
     } as ICalendarEvent;
 
     try {
       if (!dateError) {
         if (currentEvent?.id) {
-          await updateBooking(Number(currentEvent?.id), {start_time: data.start, end_time: data.end}, businessId);
+          await updateBooking(Number(currentEvent?.id), { start_time: data.start, end_time: data.end }, businessId, eventData.comment ?? '');
           enqueueSnackbar('Успішно змінено!');
         } else {
-          await createEvent(eventData);
+          const booking: IBookingCreate = {
+            start_time: data.start,
+            business_id: businessId,
+            price: 0,
+            offers: data.offers || [],
+            user: {
+              display_name: data.title,
+              phone_number: data.phoneNumber || '',
+            },
+            comment: data.comment,
+          };
+          await createNewBooking(booking, businessId);
           enqueueSnackbar('Успішно стврено!');
         }
         onClose();
@@ -98,14 +117,48 @@ export default function CalendarForm({ currentEvent, businessId, onClose }: Prop
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Stack spacing={3} sx={{ px: 3 }}>
-        <RHFTextField name="title" label="Заголовок" disabled/>
+        <RHFTextField name="title" label="Клієнт" />
+        <RHFTextField name="phoneNumber" label="Номер телефону" />
+
+        <Autocomplete
+          fullWidth
+          multiple
+          limitTags={3}
+          options={offers || []}
+          onChange={(_, value) => {
+            if (value.length > 0) {
+              const offers = value.map((offer) => offer.id);
+              methods.setValue('offers', offers);
+            }
+          }}
+          defaultValue={currentEvent?.offers || []}
+          getOptionLabel={(option) => option.name}
+          renderInput={(params) => (
+            <TextField {...params} label="Послуги" />
+          )}
+          renderOption={(props, option) => (
+            <li {...props} key={option.name}>
+              {option.name}
+            </li>
+          )}
+          renderTags={(selected, getTagProps) =>
+            selected.map((option, index) => (
+              <Chip
+                {...getTagProps({ index })}
+                key={option.name}
+                label={option.name}
+                size="small"
+                variant="soft"
+              />
+            ))
+          }
+        />
 
         <RHFTextField
-          name="description"
-          label="Перелік послуг"
+          name="comment"
+          label="Коментар"
           multiline
           rows={3}
-          disabled
         />
 
         <Controller
@@ -156,13 +209,19 @@ export default function CalendarForm({ currentEvent, businessId, onClose }: Prop
           )}
         />
 
+        <Box>
+          {currentEvent?.attachments?.map((attachment) => (
+            <Image key={attachment.id} src={attachment.original} sx={{ borderRadius: 2 }} />
+          ))}
+        </Box>
+
       </Stack>
 
       <DialogActions>
         {!!currentEvent?.id && (
-          <Tooltip title="Скачувати бронювання">
+          <Tooltip title="Скаcувати бронювання">
             <IconButton onClick={onDelete}>
-              <Iconify icon="solar:trash-bin-trash-bold" />
+              <Iconify icon="bi:trash" width={20} height={20} />
             </IconButton>
           </Tooltip>
         )}
