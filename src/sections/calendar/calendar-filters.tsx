@@ -149,7 +149,6 @@ export default function CalendarFilters({
                 height: 0,
                 position: 'absolute',
                 borderRight: '10px solid transparent',
-                borderTop: `10px solid ${event.color}`,
               }}
             />
 
@@ -166,16 +165,12 @@ export default function CalendarFilters({
                   component="div"
                   sx={{ fontSize: 11, color: 'text.disabled' }}
                 >
-                  {event.allDay ? (
-                    fDateTime(event.start, 'dd MMM yy')
-                  ) : (
-                    <>
-                      {`${fDateTime(event.start, 'dd MMM yy HH:mm')} - ${fDateTime(
-                        event.end,
-                        'dd MMM yy HH:mm'
-                      )}`}
-                    </>
-                  )}
+                  <>
+                    {`${fDateTime(event.start, 'dd MMM yy HH:mm')} - ${fDateTime(
+                      event.end,
+                      'dd MMM yy HH:mm'
+                    )}`}
+                  </>
                 </Typography>
               }
               sx={{ display: 'flex', flexDirection: 'column-reverse' }}
