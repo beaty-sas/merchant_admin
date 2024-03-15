@@ -37,19 +37,13 @@ export function useGetWorkingHours(businessId: number): {
 export async function createNewWorkingHour(businessId: number, data: IWorkingHourForm[]) {
   const URL = endpoints.workingHours.list + businessId;
 
-  await axiosInstance.post(URL, data);
+  const response = await axiosInstance.post(URL, data);
 
   mutate(
     URL,
     (currentData: any) => {
-      const newData = data.map((item) => {
-        return {
-          date_from: item.date_from,
-          date_to: item.date_to,
-        };
-      })
-
-      return [...currentData, ...newData];
+      if (!currentData) return response.data;
+      return [...currentData, ...response.data];
     },
     false
   );
