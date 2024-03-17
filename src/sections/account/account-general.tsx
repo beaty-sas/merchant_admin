@@ -93,8 +93,8 @@ export default function AccountGeneral() {
       await updateMyBusiness(business.id, {
         display_name: data.displayName,
         phone_number: data.phoneNumber,
-        logo_id: data.logoId,
-        banner_id: data.bannerId,
+        logo_id: data.logoId ?? business.logo?.id,
+        banner_id: data.bannerId ?? business.banner?.id,
         description: data.description,
         location: { name: data.address },
       });
