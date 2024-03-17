@@ -28,6 +28,8 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { IBooking } from 'src/types/booking';
 import { cancelBooking, confirmBooking } from 'src/api/booking';
 import { Box } from '@mui/system';
+import Lightbox from 'src/components/lightbox/lightbox';
+import { useLightBox } from 'src/components/lightbox';
 
 // ----------------------------------------------------------------------
 
@@ -81,6 +83,12 @@ type BookingDetailsRowProps = {
 function BookingDetailsRow({ row, businessId }: BookingDetailsRowProps) {
   const theme = useTheme();
   const collapse = useBoolean();
+  const slides = row.attachments?.map((attachment) => ({
+    src: attachment.original,
+    title: '',
+    description: '',
+  })) ?? [];
+  const lightbox = useLightBox(slides);
 
   const lightMode = theme.palette.mode === 'light';
 
@@ -109,7 +117,7 @@ function BookingDetailsRow({ row, businessId }: BookingDetailsRowProps) {
         >
           <Stack component={Paper} sx={{ m: 1.5 }}>
             <Stack
-              direction="row"
+              direction="column"
               alignItems="center"
               sx={{
                 p: (theme) => theme.spacing(1.5, 2, 1.5, 1.5),
@@ -118,7 +126,7 @@ function BookingDetailsRow({ row, businessId }: BookingDetailsRowProps) {
                 },
               }}
             >
-              <Box flex={1}>
+              <Box flex={1} mb={2}>
                 <Typography variant="body1" noWrap>
                   <b>Коментар:</b> {row.comment}
                 </Typography>
@@ -130,10 +138,24 @@ function BookingDetailsRow({ row, businessId }: BookingDetailsRowProps) {
                     key={attachment.id}
                     src={attachment.original}
                     sx={{ borderRadius: 2, mr: 1, with: 100, height: 100, cursor: 'zoom-in' }}
-                    onClick={() => window.open(attachment.original, '_blank')}
+                    onClick={() => lightbox.onOpen(attachment.original)}
                   />
                 ))}
               </Box>
+
+              <Lightbox
+                open={lightbox.open}
+                close={lightbox.onClose}
+                slides={slides}
+                index={lightbox.selected}
+                disabledZoom={false}
+                disabledTotal={true}
+                disabledVideo={true}
+                disabledCaptions={true}
+                disabledSlideshow={true}
+                disabledThumbnails={true}
+                disabledFullscreen={false}
+              />
 
             </Stack>
           </Stack>
