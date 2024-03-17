@@ -119,20 +119,19 @@ function BookingDetailsRow({ row, businessId }: BookingDetailsRowProps) {
               }}
             >
               <Box flex={1}>
-                <Typography variant="caption" noWrap>
-                  {row.offers.map((offer) => offer.name).join(', ')}
-                </Typography>
-              </Box>
-
-              <Box flex={1}>
-                <Typography variant="caption" noWrap>
+                <Typography variant="body1" noWrap>
                   <b>Коментар:</b> {row.comment}
                 </Typography>
               </Box>
-              
+
               <Box flex={3}>
                 {row.attachments?.map((attachment) => (
-                  <Image key={attachment.id} src={attachment.original} sx={{ borderRadius: 2 }} />
+                  <Image
+                    key={attachment.id}
+                    src={attachment.original}
+                    sx={{ borderRadius: 2, mr: 1, with: 100, height: 100, cursor: 'zoom-in' }}
+                    onClick={() => window.open(attachment.original, '_blank')}
+                  />
                 ))}
               </Box>
 
@@ -184,9 +183,15 @@ function BookingDetailsRow({ row, businessId }: BookingDetailsRowProps) {
           />
         </TableCell>
 
-        <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
+        <TableCell>
           <Typography variant="subtitle2" noWrap>
             {row.price} ₴
+          </Typography>
+        </TableCell>
+
+        <TableCell>
+          <Typography variant="caption" noWrap>
+            {row.offers.map((offer) => offer.name).join(', ')}
           </Typography>
         </TableCell>
 

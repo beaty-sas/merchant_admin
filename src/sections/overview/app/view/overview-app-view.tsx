@@ -35,7 +35,7 @@ export default function OverviewAppView() {
         <Grid xs={12}>
           <AppWelcome
             title={`З поверненням 👋 \n ${user?.name}`}
-            description={`Ваше посиллання для бронювань: ${HOST}/booking/${business?.slug}`}
+            description={`Ваше посиллання для бронювань: ${HOST}/link/${business?.slug}`}
             img={<SeoIllustration />}
           />
         </Grid>
@@ -82,6 +82,7 @@ export default function OverviewAppView() {
               { id: 'checkIn', label: 'Час початку' },
               { id: 'checkOut', label: 'Час закінчення' },
               { id: 'price', label: 'Ціна' },
+              { id: 'offers', label: 'Послуги' },
               { id: 'status', label: 'Статус' },
               { id: '' },
             ]}
