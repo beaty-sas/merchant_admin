@@ -86,7 +86,7 @@ export default function AccountGeneral() {
     if (!isDirty) {
       return;
     }
-    
+
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
       enqueueSnackbar('Зміни успішно збережено!');
@@ -170,19 +170,21 @@ export default function AccountGeneral() {
               onDrop={handleDrop}
               sx={{ mt: 3 }}
               helperText={
-                <Typography
-                  variant="caption"
-                  sx={{
-                    mt: 3,
-                    mx: 'auto',
-                    display: 'block',
-                    textAlign: 'center',
-                    color: 'text.disabled',
-                  }}
-                >
-                  Формати *.jpeg, *.jpg, *.png, *.gif
-                  <br /> максимальна вага {fData(3145728)}
-                </Typography>
+                <>
+                  <Typography variant="h6" sx={{ mt: 3 }}>Фото аватару</Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      mx: 'auto',
+                      display: 'block',
+                      textAlign: 'center',
+                      color: 'text.disabled',
+                    }}
+                  >
+                    Формати *.jpeg, *.jpg, *.png, *.gif
+                    <br /> максимальна вага {fData(3145728)}
+                  </Typography>
+                </>
               }
             />
           </Card>
@@ -204,7 +206,13 @@ export default function AccountGeneral() {
 
             <Stack spacing={3} alignItems="flex-end" sx={{ mt: 3 }}>
 
-              <LoadingButton type="submit" variant="contained" loading={isSubmitting} fullWidth>
+              <LoadingButton
+                type="submit"
+                variant="contained"
+                loading={isSubmitting}
+                fullWidth
+                disabled={!isDirty}
+              >
                 Зберегти зміни
               </LoadingButton>
             </Stack>

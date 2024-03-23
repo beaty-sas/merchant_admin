@@ -167,6 +167,7 @@ export default function CalendarForm({ currentEvent, businessId, onClose, offers
           render={({ field }) => (
             <MobileDateTimePicker
               {...field}
+              ampm={false}
               value={new Date(field.value as ICalendarDate)}
               onChange={(newValue) => {
                 if (newValue) {
@@ -184,12 +185,13 @@ export default function CalendarForm({ currentEvent, businessId, onClose, offers
           )}
         />
 
-        <Controller
+        {currentEvent && <Controller
           name="end"
           control={control}
           render={({ field }) => (
             <MobileDateTimePicker
               {...field}
+              ampm={false}
               value={new Date(field.value as ICalendarDate)}
               onChange={(newValue) => {
                 if (newValue) {
@@ -207,7 +209,7 @@ export default function CalendarForm({ currentEvent, businessId, onClose, offers
               }}
             />
           )}
-        />
+        />}
 
         <Box>
           {currentEvent?.attachments?.map((attachment) => (

@@ -8,6 +8,8 @@ import Button from '@mui/material/Button';
 import LoadingButton from '@mui/lab/LoadingButton';
 import DialogActions from '@mui/material/DialogActions';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { DesktopTimePicker } from '@mui/x-date-pickers/DesktopTimePicker';
+import { MobileTimePicker } from '@mui/x-date-pickers/MobileTimePicker';
 
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider from 'src/components/hook-form';
@@ -46,18 +48,18 @@ export default function WorkingHourForm({ onClose, businessId }: Props) {
     const requestData: IWorkingHourForm[] = [];
     const startDate = new Date(data.start_date);
     const endDate = new Date(data.end_date);
-    
+
     const openingTime = new Date(data.opening_time);
     const closingTime = new Date(data.closing_time);
-    
+
     for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
-        const dateFrom = new Date(date);
-        dateFrom.setHours(openingTime.getHours(), openingTime.getMinutes(), 0, 0);
-        const dateTo = new Date(date);
-        dateTo.setHours(closingTime.getHours(), closingTime.getMinutes(), 0, 0);
-        requestData.push({ date_from: dateFrom.toISOString(), date_to: dateTo.toISOString() });
+      const dateFrom = new Date(date);
+      dateFrom.setHours(openingTime.getHours(), openingTime.getMinutes(), 0, 0);
+      const dateTo = new Date(date);
+      dateTo.setHours(closingTime.getHours(), closingTime.getMinutes(), 0, 0);
+      requestData.push({ date_from: dateFrom.toISOString(), date_to: dateTo.toISOString() });
     }
-    
+
     try {
       await createNewWorkingHour(businessId, requestData);
       enqueueSnackbar('Успішно створено!');
@@ -77,13 +79,15 @@ export default function WorkingHourForm({ onClose, businessId }: Props) {
           name="opening_time"
           control={control}
           render={({ field, fieldState: { error } }) => (
-            <TimePicker
+            <MobileTimePicker
               {...field}
               label="Час першого замовлення"
               format="HH:mm"
+              ampm={false}
               slotProps={{
                 textField: {
                   fullWidth: true,
+                  margin: 'normal',
                   error: !!error,
                   helperText: error?.message,
                 },
@@ -96,13 +100,15 @@ export default function WorkingHourForm({ onClose, businessId }: Props) {
           name="closing_time"
           control={control}
           render={({ field, fieldState: { error } }) => (
-            <TimePicker
+            <MobileTimePicker
               {...field}
               label="Час до якого приймати замовлення"
               format="HH:mm"
+              ampm={false}
               slotProps={{
                 textField: {
                   fullWidth: true,
+                  margin: 'normal',
                   error: !!error,
                   helperText: error?.message,
                 },

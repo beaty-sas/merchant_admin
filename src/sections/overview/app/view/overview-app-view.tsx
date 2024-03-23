@@ -3,19 +3,23 @@
 import { useTheme } from '@mui/material/styles';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
-
+import { useCallback } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
+import Stack from '@mui/material/Stack';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
 
 import { SeoIllustration } from 'src/assets/illustrations';
-
 import { useSettingsContext } from 'src/components/settings';
-
 import AppWelcome from '../app-welcome';
 import AppWidgetSummary from '../app-widget-summary';
 import BookingDetails from '../../booking/booking-details';
 import { getBookingAnalytics, useGetBookings } from 'src/api/booking';
 import { useGetMyBusiness } from 'src/api/business';
 import { HOST } from 'src/config-global';
+import { useSnackbar } from 'src/components/snackbar';
+import { useCopyToClipboard } from 'src/hooks/use-copy-to-clipboard';
+import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
@@ -24,9 +28,22 @@ export default function OverviewAppView() {
   const { business } = useGetMyBusiness()
   const { bookingAnalytic } = getBookingAnalytics()
   const { bookings } = useGetBookings(business?.id || 0)
+  const { copy } = useCopyToClipboard();
+  const { enqueueSnackbar } = useSnackbar();
+  
 
   const theme = useTheme();
   const settings = useSettingsContext();
+
+  const onCopy = useCallback(
+    (text: string) => {
+      if (text) {
+        enqueueSnackbar('Copied!');
+        copy(text);
+      }
+    },
+    [copy, enqueueSnackbar]
+  );
 
 
   return (
@@ -37,6 +54,15 @@ export default function OverviewAppView() {
             title={`З поверненням 👋 \n ${user?.name}`}
             description={`Ваше посиллання для бронювань: ${HOST}/link/${business?.slug}`}
             img={<SeoIllustration />}
+            action={
+              <Stack direction="row" spacing={1}>
+                <Tooltip title="Скопіювати посилання">
+                  <IconButton onClick={() => onCopy(`${HOST}/link/${business?.slug}`)}>
+                    <Iconify icon="eva:copy-fill" width={20} height={20} />
+                  </IconButton>
+                </Tooltip>
+              </Stack>
+            }
           />
         </Grid>
 
@@ -75,6 +101,7 @@ export default function OverviewAppView() {
         <Grid xs={12}>
           <BookingDetails
             businessId={business?.id || 0}
+            businessSlug={business?.slug}
             title="Наступні бронювання"
             tableData={bookings}
             tableLabels={[

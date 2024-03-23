@@ -51,16 +51,17 @@ export default function AppWelcome({ title, description, action, img, ...other }
 
         <Typography
           variant="body2"
+          display="flex"
           sx={{
             opacity: 0.8,
             maxWidth: 360,
             mb: { xs: 3, xl: 5 },
           }}
         >
+          {action && action}
           {description}
         </Typography>
 
-        {action && action}
       </Stack>
 
       {img && (

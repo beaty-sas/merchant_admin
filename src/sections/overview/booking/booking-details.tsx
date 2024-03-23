@@ -6,7 +6,6 @@ import { useTheme } from '@mui/material/styles';
 import TableCell from '@mui/material/TableCell';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
-import CardHeader from '@mui/material/CardHeader';
 import Card, { CardProps } from '@mui/material/Card';
 import ListItemText from '@mui/material/ListItemText';
 import TableContainer from '@mui/material/TableContainer';
@@ -15,6 +14,9 @@ import { enqueueSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Paper from '@mui/material/Paper';
+import { Button } from '@mui/material';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
 
 import { fDate, fTime } from 'src/utils/format-time';
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -30,6 +32,9 @@ import { cancelBooking, confirmBooking } from 'src/api/booking';
 import { Box } from '@mui/system';
 import Lightbox from 'src/components/lightbox/lightbox';
 import { useLightBox } from 'src/components/lightbox';
+import { useCalendar } from 'src/sections/calendar/hooks';
+import CalendarForm from 'src/sections/calendar/calendar-form';
+import { useGetMyOffers } from 'src/api/offer';
 
 // ----------------------------------------------------------------------
 
@@ -40,6 +45,7 @@ interface Props extends CardProps {
   tableLabels: any;
   tableData: IBooking[];
   businessId: number;
+  businessSlug: string;
 }
 
 export default function BookingDetails({
@@ -48,11 +54,62 @@ export default function BookingDetails({
   tableLabels,
   tableData,
   businessId,
+  businessSlug,
   ...other
 }: Props) {
+  const theme = useTheme();
+  const { onOpenForm, openForm, onCloseForm } = useCalendar();
+
+  const { offers } = useGetMyOffers(businessSlug || '')
+
+
+  const newBooking = () => {
+    return (
+      <Dialog
+        fullWidth
+        maxWidth="xs"
+        open={openForm}
+        onClose={onCloseForm}
+        transitionDuration={{
+          enter: theme.transitions.duration.shortest,
+          exit: theme.transitions.duration.shortest - 80,
+        }}
+      >
+        <DialogTitle sx={{ minHeight: 76 }}>
+          {'Додати нове бронювання'}
+        </DialogTitle>
+
+        <CalendarForm
+          businessId={businessId}
+          onClose={onCloseForm}
+          offers={offers}
+        />
+      </Dialog>
+    )
+  }
+
+
   return (
     <Card {...other}>
-      <CardHeader title={title} subheader={subheader} sx={{ mb: 3 }} />
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="space-between"
+        sx={{
+          m: 3,
+        }}
+      >
+        <Typography variant="h4">{title}</Typography>
+        <Button
+          variant="contained"
+          startIcon={<Iconify icon="mingcute:add-line" />}
+          onClick={onOpenForm}
+        >
+          Додати бронювання
+        </Button>
+      </Stack>
+      
+      {newBooking()}
 
       <TableContainer sx={{ overflow: 'unset' }}>
         <Scrollbar>

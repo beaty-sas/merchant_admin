@@ -50,7 +50,8 @@ export default function Upload({
     <Stack spacing={3} alignItems="center" justifyContent="center" flexWrap="wrap">
       <UploadIllustration sx={{ width: 1, maxWidth: 200 }} />
       <Stack spacing={1} sx={{ textAlign: 'center' }}>
-        <Typography variant="h6">Перетягніть або виберіть файл</Typography>
+        <Typography variant="h6">Фото обкладинки</Typography>
+        <Typography variant="caption">Перетягніть або виберіть файл</Typography>
       </Stack>
     </Stack>
   );
