@@ -138,7 +138,7 @@ export default function AccountGeneral() {
 
 	const handleSetTelegramUser = useCallback(
 		async (user: TelegramUser) => {
-			await updateMerchant({'telegram_id': user.id});
+			await updateMerchant({'telegram_id': String(user.id)});
 		},
 		[]
 	);
