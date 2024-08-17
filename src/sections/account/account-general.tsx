@@ -188,10 +188,12 @@ export default function AccountGeneral() {
 							}
 						/>
 
-						<TelegramLoginButton
-							botName="reserve_expert_bot"
-							dataOnauth={handleSetTelegramUser}
-						/>
+						<Stack mt={2}>
+							<TelegramLoginButton
+								botName="reserve_expert_bot"
+								dataOnauth={handleSetTelegramUser}
+							/>
+						</Stack>
 					</Card>
 				</Grid>
 
