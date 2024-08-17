@@ -58,7 +58,7 @@ export async function updateMyBusiness(businessId: number, data: IBusinessUpdate
 // ----------------------------------------------------------------------
 
 export async function makeNewAttachment(file: any) {
-  const URL = endpoints.attachements;
+  const URL = endpoints.attachments;
 
   const response = await axiosInstance.post(URL, { attachment: file }, { headers: { 'Content-Type': 'multipart/form-data' } });
   return response.data;

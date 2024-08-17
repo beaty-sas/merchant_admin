@@ -65,8 +65,11 @@ export const endpoints = {
   workingHours: {
     list: '/api/working-hours/',
   },
-  attachements: '/api/attachments',
+  attachments: '/api/attachments',
   analytics: {
     booking: '/api/analytics/booking',
   },
+  merchant: {
+    me: '/api/me',
+  }
 };
